@@ -19,7 +19,7 @@ if [ ! -d "$KEY_DIR" ]; then mkdir $KEY_DIR; fi
 if [ ! -f "$DOCKERKEYS/openldap/ldap.key" ] || [ ! -f "$DOCKERKEYS/openldap/ldap.crt" ] || [ ! -f "$DOCKERKEYS/openldap/ca.crt" ] || [ ! -f "$DOCKERKEYS/openldap/dhparam.pem" ] || [ ! -f "$DOCKERKEYS/postgresql/server.pem" ]
 then
         echo "Not all files created; calling creation script..."
-        ../common/create-ldap-and-postgres-keys.sh
+        $RUNDIR/../common/create-ldap-and-postgres-keys.sh
 fi
 
 if [ ! -f "$KEY_DIR/openldap/ldap.key" ] || [ ! -f "$KEY_DIR/openldap/ldap.crt" ] || [ ! -f "$KEY_DIR/openldap/ca.crt" ] || [ ! -f "$KEY_DIR/openldap/dhparam.pem" ] || [ ! -f "$KEY_DIR/postgresql/server.pem" ]
@@ -43,7 +43,7 @@ docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamconfi
 
 docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamwrprp1 --name isamwrprp1 --cap-add SYS_PTRACE --cap-add SYS_RESOURCE -e CONTAINER_TIMEZONE=Europe/London -p ${MY_WEB1_IP}:443:443 -e SERVICE=webseal -e INSTANCE=rp1 -e AUTO_RELOAD_FREQUENCY=5 --network isam store/ibmcorp/isam:${ISAM_VERSION}
 
-docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamruntime --name isamruntime --cap-add SYS_PTRACE --cap-add SYS_RESOURCE -e CONTAINER_TIMEZONE=Europe/London -p ${MY_LMI_IP}:1443:443 -e SERVICE=runtime -e AUTO_RELOAD_FREQUENCY=5 --network isam store/ibmcorp/isam:${ISAM_VERSION}
+docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamruntime --name isamruntime --cap-add SYS_PTRACE --cap-add SYS_RESOURCE -e CONTAINER_TIMEZONE=Europe/London -e SERVICE=runtime -e AUTO_RELOAD_FREQUENCY=5 --network isam store/ibmcorp/isam:${ISAM_VERSION}
 
-docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamdsc --name isamdsc --cap-add SYS_PTRACE --cap-add SYS_RESOURCE -e CONTAINER_TIMEZONE=Europe/London -p ${MY_LMI_IP}:8443:443 -p ${MY_LMI_IP}:8444:444 -e SERVICE=dsc -e INSTANCE=1 -e AUTO_RELOAD_FREQUENCY=5 --network isam store/ibmcorp/isam:${ISAM_VERSION}
+docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamdsc --name isamdsc --cap-add SYS_PTRACE --cap-add SYS_RESOURCE -e CONTAINER_TIMEZONE=Europe/London -e SERVICE=dsc -e INSTANCE=1 -e AUTO_RELOAD_FREQUENCY=5 --network isam store/ibmcorp/isam:${ISAM_VERSION}
 

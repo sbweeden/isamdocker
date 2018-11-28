@@ -19,7 +19,7 @@ if [ ! -d "$KEY_DIR" ]; then mkdir $KEY_DIR; fi
 if [ ! -f "$DOCKERKEYS/openldap/ldap.key" ] || [ ! -f "$DOCKERKEYS/openldap/ldap.crt" ] || [ ! -f "$DOCKERKEYS/openldap/ca.crt" ] || [ ! -f "$DOCKERKEYS/openldap/dhparam.pem" ] || [ ! -f "$DOCKERKEYS/postgresql/server.pem" ]
 then
         echo "Not all files created; calling creation script..."
-        ../common/create-ldap-and-postgres-keys.sh
+        $RUNDIR/../common/create-ldap-and-postgres-keys.sh
 fi
 
 echo "Creating key shares at $KEY_DIR"

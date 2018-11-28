@@ -26,7 +26,7 @@ spec:
             secretName: openldap-keys
       containers:
         - name: openldap
-          image: ibmcom/isam-openldap:9.0.5.0
+          image: ibmcom/isam-openldap:9.0.6.0
           ports:
             - containerPort: 636
           env:
@@ -89,7 +89,7 @@ spec:
             secretName: postgresql-keys
       containers:
         - name: postgresql
-          image: ibmcom/isam-postgresql:9.0.5.0
+          image: ibmcom/isam-postgresql:9.0.6.0
           ports:
             - containerPort: 5432
           env:
@@ -145,7 +145,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamconfig
-          image: store/ibmcorp/isam:9.0.5.0
+          image: store/ibmcorp/isam:9.0.6.0
           volumeMounts:
             - mountPath: /var/shared
               name: isamconfig
@@ -207,7 +207,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamwrprp1
-          image: store/ibmcorp/isam:9.0.5.0
+          image: store/ibmcorp/isam:9.0.6.0
           ports:
             - containerPort: 443
           volumeMounts:
@@ -277,7 +277,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamruntime
-          image: store/ibmcorp/isam:9.0.5.0
+          image: store/ibmcorp/isam:9.0.6.0
           ports:
             - containerPort: 443
           volumeMounts:
@@ -341,7 +341,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamdsc
-          image: store/ibmcorp/isam:9.0.5.0
+          image: store/ibmcorp/isam:9.0.6.0
           ports:
             - containerPort: 443
             - containerPort: 444
