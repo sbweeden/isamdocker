@@ -1,9 +1,19 @@
+#!/bin/bash
+  
+# Get directory for this script
+RUNDIR="`dirname \"$0\"`"         # relative
+RUNDIR="`( cd \"$RUNDIR\" && pwd )`"  # absolutized and normalized
+if [ -z "$RUNDIR" ] ; then
+  echo "Failed to get local path"
+  exit 1  # fail
+fi
+
 KEY_DIR="${HOME}/dockerkeys"
 
 if [ ! -f "$KEY_DIR/openldap/ldap.key" ] || [ ! -f "$KEY_DIR/openldap/ldap.crt" ] || [ ! -f "$KEY_DIR/openldap/ca.crt" ] || [ ! -f "$KEY_DIR/openldap/dhparam.pem" ] || [ ! -f "$KEY_DIR/postgresql/server.pem" ]
 then
 	echo "Not all files created; calling creation script..."
-	../common/create-ldap-and-postgres-keys.sh
+	$RUNDIR/../common/create-ldap-and-postgres-keys.sh
 fi
 
 # Create secret for TLS certificates used by this container
