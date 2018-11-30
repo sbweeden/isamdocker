@@ -1,5 +1,5 @@
 # Version Information
-These scripts are for IBM Security Access Manger 9.0.6.0.
+These scripts are for IBM Security Access Manager 9.0.6.0.
 
 # Common Requirements and Setup
 
