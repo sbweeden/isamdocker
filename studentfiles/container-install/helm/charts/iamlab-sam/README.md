@@ -1,3 +1,7 @@
+# Important
+These charts have been modified from the original version published at https://github.com/ibm/charts.
+They have been modified to allow interoperability with the other Docker assets in thie repository.
+
 # IBM Security Access Manager 
 
 ## Introduction
@@ -16,6 +20,7 @@ This chart will deploy an IBM Security Access Manager environment.  This environ
 | isamrt     | This container provides the runtime services of the Advanced Access Control and Federation offerings.  This is an optional part of the environment and is only required if AAC or Federation capabilities are required.
 | isamdsc    | This container provides the distributed session cache server.  It is an optional component and is only required if user sessions need to be shared across multiple containers.
 | isampostgresql | This container provides a sample database which can be used by IBM Security Access Manager.  It is not designed to be used in production and should only ever be used in development or proof of concept environments.
+| isamopenldap | This container provides a sample LDAP directory which can be used by IBM Security Access Manager.  It is not designed to be used in production and should only ever be used in development or proof of concept environments.
 
 
 ## Prerequisites
@@ -188,6 +193,8 @@ The minimum resources required for each of the container types are:
 | isamdsc        | 512Mi          | 500m
 | isampostgresql | 512Mi          | 500m
 
+The 1Gi and 1000m minimum values here have been reduced in these charts to allow installation on a local test environment.
+
 ## Installing the Chart
 
 To install the chart with the release name `my-release`:
@@ -257,7 +264,7 @@ The following tables list the configurable parameters of the ISAM chart, along w
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `isamwrp.container.instances` | The number of unique secure Web Reverse Proxy instances to be created.  The instance name which should be used is of the format wrp_\<instance number> (where the instance number starts at 0). | `1` |
+| `isamwrp.container.instances` | An array of instance names to be created. | `[rp1]` |
 | `isamwrp.container.replicas` | The number of replicas to start for each unique secure Web Reverse Proxy instance. | `1` |
 | `isamwrp.resources.requests.memory` | The amount of memory to be allocated to each Web Reverse Proxy instance. | `512Mi` |
 | `isamwrp.resources.requests.cpu` | The amount of CPU to be allocated to each replica of each Web Reverse Proxy instance. | `500m` |
@@ -292,10 +299,23 @@ The following tables list the configurable parameters of the ISAM chart, along w
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `isampostgresql.container.enabled` | Whether the demonstration PostgreSQL service is required. | `false` |
+| `isampostgresql.container.keySecretName` | An existing secret containing server.pem for secure communication | empty |
 | `isampostgresql.resources.requests.memory` | The amount of memory to be allocated to the demonstration PostgreSQL service. | `512Mi` |
 | `isampostgresql.resources.requests.cpu` | The amount of CPU to be allocated to the demonstration PostgreSQL service. | `500m` |
 | `isampostgresql.resources.limits.memory` | The maximum amount of memory to be used by the demonstration PostgreSQL service. | `1Gi` |
 | `isampostgresql.resources.limits.cpu` | The maximum amount of CPU to be used by the demonstration PostgreSQL service. | `1000m` |
+
+### Directory
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `isamopenldap.container.enabled` | Whether the demonstration PostgreSQL service is required. | `false` |
+| `isamopenldap.container.keySecretName` | An existing secret containing cert and key for secure communication | empty |
+| `isamopenldap.resources.requests.memory` | The amount of memory to be allocated to the demonstration PostgreSQL service. | `512Mi` |
+| `isamopenldap.resources.requests.cpu` | The amount of CPU to be allocated to the demonstration PostgreSQL service. | `500m` |
+| `isamopenldap.resources.limits.memory` | The maximum amount of memory to be used by the demonstration PostgreSQL service. | `1Gi` |
+| `isamopenldap.resources.limits.cpu` | The maximum amount of CPU to be used by the demonstration PostgreSQL service. | `1000m` |
+
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.  For example:
 
