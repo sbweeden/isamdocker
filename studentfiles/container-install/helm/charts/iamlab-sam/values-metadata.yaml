@@ -250,7 +250,7 @@ isamwrp:
       __metadata:
         name: "instances"
         label: "List of instances"
-        description: "A comma-separated list of WRP instances to create (instance names)."
+        description: "An array of WRP instances to create (instance names)."
         type: "string"
         required: true
     replicas: 

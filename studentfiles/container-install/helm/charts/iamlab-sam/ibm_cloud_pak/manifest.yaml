@@ -4,6 +4,7 @@ charts:
     repository-keys: 
       - global.image.repository
       - global.image.dbrepository
+      - global.image.ldaprepository
 
 images:
 - image: store/ibmcorp/isam:9.0.6.0
@@ -12,6 +13,9 @@ images:
 - image: ibmcom/isam-postgresql:9.0.6.0
   references:
   - repository: ibmcom/isam-postgresql:9.0.6.0
+- image: ibmcom/isam-openldap:9.0.6.0
+  references:
+  - repository: ibmcom/isam-openldap:9.0.6.0
 - image: centos:7
   references:
   - repository: centos:7
