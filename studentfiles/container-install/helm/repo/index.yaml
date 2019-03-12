@@ -23,5 +23,5 @@ entries:
     - https://github.com/jonpharry/isamdocker/tree/helm/studentfiles/container-install/helm/charts
     tillerVersion: '>=2.9.1'
     urls:
-    - https://raw.githubusercontent.com/jonpharry/isamdocker/helm/studentfiles/container-install/helm/repo/ibmlab-sam-0.1.0.tgz
+    - https://raw.githubusercontent.com/jonpharry/isamdocker/helm/studentfiles/container-install/helm/repo/iamlab-sam-0.1.0.tgz
 version: 0.1.0
