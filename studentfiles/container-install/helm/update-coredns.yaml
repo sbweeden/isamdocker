@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns
+  namespace: kube-system
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health
+        rewrite name isamconfig iamlab-isamconfig.default.svc.cluster.local
+        rewrite name isamwrprp1 iamlab-isamwrp-0.default.svc.cluster.local
+        rewrite name postgresql iamlab-isampostgresql.default.svc.cluster.local
+        rewrite name isamruntime iamlab-isamruntime.default.svc.cluster.local
+        rewrite name isamdsc iamlab-isamdsc-primary.default.svc.cluster.local
+        rewrite name openldap iamlab-isamopenldap.default.svc.cluster.local
+        kubernetes cluster.local in-addr.arpa ip6.arpa {
+           pods insecure
+           upstream
+           fallthrough in-addr.arpa ip6.arpa
+        }
+        prometheus :9153
+        proxy . /etc/resolv.conf
+        cache 30
+        loop
+        reload
+        loadbalance
+    }
+
