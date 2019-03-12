@@ -9,4 +9,4 @@ if [ -z "$RUNDIR" ] ; then
 fi
 
 
-helm install --name iamlab -f $RUNDIR/values.yaml $RUNDIR/charts/ibm-sam
+helm install --name iamlab -f $RUNDIR/values.yaml $RUNDIR/charts/iamlab-sam
