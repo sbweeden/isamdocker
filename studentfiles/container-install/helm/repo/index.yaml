@@ -1,9 +1,9 @@
 apiVersion: v1
 entries:
   iamlab-sam:
-  - created: 2019-03-12T20:47:39.172656545Z
+  - created: 2019-03-19T20:47:39.172656545Z
     description: IBM Security Access Manager for IAMLAB cookbooks
-    digest: eabeb8f097d08fb5ecbaa1fae4ca557d711e5991ebc6a23478c25eac0a52a27e
+    digest: 296839ef7a6b087cf44d466aa0f303e0929aa919a9e74db83cb2d940b6f0ba7c
     engine: gotpl
     home: https://store.docker.com/images/ibm-security-access-manager
     icon: https://d1q6f0aelx0por.cloudfront.net/product-logos/32925feb-af2b-4b4c-8276-def2a031ed31-artwork2x.png
@@ -17,8 +17,8 @@ entries:
     - name: IBM Security Access Manager
     name: iamlab-sam
     sources:
-    - https://github.com/jonpharry/isamdocker/tree/helm/studentfiles/container-install/helm/charts
+    - https://github.com/jonpharry/isamdocker/tree/master/studentfiles/container-install/helm/charts
     tillerVersion: '>=2.9.1'
     urls:
-    - https://raw.githubusercontent.com/jonpharry/isamdocker/helm/studentfiles/container-install/helm/repo/iamlab-sam-0.1.0.tgz
+    - https://raw.githubusercontent.com/jonpharry/isamdocker/master/studentfiles/container-install/helm/repo/iamlab-sam-0.1.0.tgz
     version: 0.1.0
