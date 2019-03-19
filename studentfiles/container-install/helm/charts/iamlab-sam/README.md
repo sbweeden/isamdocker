@@ -200,7 +200,7 @@ The 1Gi and 1000m minimum values here have been reduced in these charts to allow
 To install the chart with the release name `my-release`:
 
 ```bash
-$ helm install --tls --name my-release ibm-sam
+$ helm install --tls --name my-release iamlab-sam
 ```
 
 This command deploys the ISAM image on the Kubernetes cluster using the default configuration. The configuration section lists the parameters that can be configured during installation.
