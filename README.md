@@ -83,6 +83,29 @@ To access the Reverse Proxy you will need to determine an External IP for a Node
 For Google, access to a NodePort requires the following filewall rule to be created:
 `gcloud compute firewall-rules create isamwrp-node-port --allow tcp:30443`
 
+# Helm
+To set up an environment using Helm, use the files in studentfiles/container-install/helm.
+
+These scripts assume that you have the `kubectl` and `helm` utilities installed and that thy are configured to talk to a cluster where tiller has been installed.  To install tiller to your cluster, use the command `helm init`.
+
+First, run `./create-docker-store-secret.sh` command and provide your Docker credentials.
+
+Next, run `./create-secrets.sh` command to create the secrets required for the environment.
+
+Finally, run `helm-install.sh` to run the helm command to create an Access Manager release.
+
+The output from this command includes the information you will need to connect to the LMI and Reverse Proxy services.
+
+IMPORTANT: The Helm Charts shown here are modified from the charts provided with Access Manager.  The following changes have been made:
+- Ability to include an OpenLDAP deployment in the release
+- Ability to specify pre-created secrets for key materials for OpenLDAP and PostgreSQL deployments
+- Ability to specify the names of Reverse Proxy instances
+
+If you want to be able to restore a configuration archive created in other environments described here, you will need to allow the names used in the other deployments to resolve here.  If your Kubernetes cluster uses CoreDNS, you can use command `kubectl create -f update-coredns.yaml` to add suitable rewrite rules.  Otherwise you will need to manually modify the configuration after deployment to replace hostnames wherever they appear.
+
+The charts used here can be added to IBM Cloud Private by adding a custom repository pointing at:
+https://raw.githubusercontent.com/jonpharry/isamdocker/helm/studentfiles/container-install/helm/repo
+
 # OpenShift
 This is a work in progress.  OpenShift is not supported by Access Manager at this time.
 
