@@ -264,7 +264,7 @@ The following tables list the configurable parameters of the ISAM chart, along w
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `isamwrp.container.instances` | An array of instance names to be created. | `[rp1]` |
+| `isamwrp.container.instances` | An array of instance names to be created. | `-rp1` |
 | `isamwrp.container.replicas` | The number of replicas to start for each unique secure Web Reverse Proxy instance. | `1` |
 | `isamwrp.resources.requests.memory` | The amount of memory to be allocated to each Web Reverse Proxy instance. | `512Mi` |
 | `isamwrp.resources.requests.cpu` | The amount of CPU to be allocated to each replica of each Web Reverse Proxy instance. | `500m` |
