@@ -104,7 +104,7 @@ IMPORTANT: The Helm Charts shown here are modified from the charts provided with
 If you want to be able to restore a configuration archive created in other environments described here, you will need to allow the names used in the other deployments to resolve here.  If your Kubernetes cluster uses CoreDNS, you can use command `kubectl create -f update-coredns.yaml` to add suitable rewrite rules.  Otherwise you will need to manually modify the configuration after deployment to replace hostnames wherever they appear.
 
 The charts used here can be added to IBM Cloud Private by adding a custom repository pointing at:
-https://raw.githubusercontent.com/jonpharry/isamdocker/helm/studentfiles/container-install/helm/repo
+https://raw.githubusercontent.com/jonpharry/isamdocker/master/studentfiles/container-install/helm/repo
 
 # OpenShift
 This is a work in progress.  OpenShift is not supported by Access Manager at this time.
