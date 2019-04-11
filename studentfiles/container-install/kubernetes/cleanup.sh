@@ -10,6 +10,7 @@ kubectl delete service isamwrprp1
 kubectl delete service openldap
 kubectl delete service postgresql
 kubectl delete service isamdsc
+kubectl delete ingress isamwrprp1
 kubectl delete secret configreader
 kubectl delete secret samadmin
 kubectl delete secret dockerlogin

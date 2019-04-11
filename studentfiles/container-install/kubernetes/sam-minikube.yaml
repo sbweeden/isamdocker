@@ -450,3 +450,23 @@ spec:
       protocol: TCP
   selector:
     app: isamdsc
+---
+ apiVersion: extensions/v1beta1
+ kind: Ingress
+ metadata:
+   name: isamwrprp1
+   annotations:
+     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+ spec:
+  tls:
+  - hosts:
+    - www.iamlab.ibm.com
+  rules:
+  - host: www.iamlab.ibm.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: isamwrprp1
+          servicePort: 443
+
