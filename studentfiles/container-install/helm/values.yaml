@@ -11,6 +11,7 @@ global:
   image:
     repository:   store/ibmcorp/isam
     dbrepository: ibmcom/isam-postgresql
+    ldaprepository: ibmcom/isam-openldap
     tag:          9.0.6.0
     pullPolicy:   IfNotPresent
 
@@ -29,20 +30,6 @@ global:
   persistence:
     enabled:                true
     useDynamicProvisioning: true
-
-  # Data Volume
-  dataVolume:
-
-    # Specify the name of the Existing Claim to be used by your application.
-    # An empty string means that an existing claim will not be used.
-    existingClaimName: ""
-
-    # Specify the name of the storage class.  Any empty string means that we
-    # won't use a storage class.
-    storageClassName: ""
-
-    accessModes: ReadWriteMany
-    size:        20Gi
 
 ###############################################################################
 # Configuration container variables.
@@ -63,6 +50,19 @@ isamconfig:
   # Service Configuration.
   service:
     type: NodePort
+
+  # Data Volume
+  dataVolume:
+
+    # Specify the name of the Existing Claim to be used by your application.
+    # An empty string means that an existing claim will not be used.
+    existingClaimName: ""
+
+    # Specify the name of the storage class.  Any empty string means that we
+    # won't use a storage class.
+    storageClassName: ""
+
+    size:        5Gi
 
 ###############################################################################
 # Web Reverse Proxy container variables.
@@ -154,6 +154,19 @@ isampostgresql:
       memory: 1Gi
       cpu:    1000m
 
+  # Data Volume
+  dataVolume:
+
+    # Specify the name of the Existing Claim to be used by your application.
+    # An empty string means that an existing claim will not be used.
+    existingClaimName: ""
+
+    # Specify the name of the storage class.  Any empty string means that we
+    # won't use a storage class.
+    storageClassName: ""
+
+    size:        5Gi
+
 ###############################################################################
 # openldap container variables.
 
@@ -175,3 +188,15 @@ isamopenldap:
       memory: 1Gi
       cpu:    1000m
 
+  # Data Volume
+  dataVolume:
+
+    # Specify the name of the Existing Claim to be used by your application.
+    # An empty string means that an existing claim will not be used.
+    existingClaimName: ""
+
+    # Specify the name of the storage class.  Any empty string means that we
+    # won't use a storage class.
+    storageClassName: ""
+
+    size:        5Gi

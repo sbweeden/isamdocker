@@ -2,7 +2,7 @@
 {{- $pvcName := "dataPVC" -}}
 
 #
-# This file contains the main deployment definition used by the helm chart 
+# This file contains the main deployment definition used by the helm chart
 # installation.
 #
 
@@ -28,7 +28,7 @@ spec:
         # XXX: For some reason the 'app' label needs to be the fully qualified
         #      application name else the helm_test command fails because we
         #      can't resolve the application name.  This should be revisited
-        #      at some point in the future so that we can make use of the 
+        #      at some point in the future so that we can make use of the
         #      sch.metadata.labels.standard tag.
         app: {{ template "config.name" . }}
         chart: {{ .Chart.Name }}
@@ -101,8 +101,8 @@ spec:
         livenessProbe:
           tcpSocket:
             port: {{ template "admin.port" . }}
-          initialDelaySeconds: 15
-          periodSeconds: 20 
+          initialDelaySeconds: 120
+          periodSeconds: 20
 
         ports:
         - name: {{ .sch.chart.config.servicename }}
@@ -112,19 +112,15 @@ spec:
 {{ toYaml .Values.resources | indent 10 }}
 
         volumeMounts:
-        - name: {{ template "pvc.name" . }}
+        - name: {{ template "config.pvc.name" . }}
           mountPath: /var/shared
           subPath: config.shared
-        - name: {{ template "pvc.name" . }}
-          mountPath: /var/application.logs
-          subPath: config.logs
 
       volumes:
-        - name: {{ template "pvc.name" . }}
+        - name: {{ template "config.pvc.name" . }}
         {{- if .Values.global.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ template "pvc.name" . }}
+            claimName: {{ template "config.pvc.name" . }}
         {{- else }}
           emptyDir: {}
         {{- end }}
-

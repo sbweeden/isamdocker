@@ -2,7 +2,7 @@
 These charts have been modified from the original version published at https://github.com/ibm/charts.
 They have been modified to allow interoperability with the other Docker assets in thie repository.
 
-# IBM Security Access Manager 
+# IBM Security Access Manager
 
 ## Introduction
 
@@ -13,7 +13,7 @@ In a world of highly fragmented access management environments, IBM Security Acc
 
 This chart will deploy an IBM Security Access Manager environment.  This environment will consist of a number of different containers, namely:
 
-| Container  | Purpose 
+| Container  | Purpose
 | ---------  | -------------------
 | isamconfig | This container provides the Web console which can be used to configure the environment.
 | isamwrp    | This container provides a secure Web Reverse Proxy.  This should serve as the network entry point into the environment.
@@ -33,11 +33,11 @@ In order to be able to access the ISAM docker image in Docker Store:
 1. A docker account (user identity and password) must be available.  A docker account can be created by following the instructions found at: [https://docs.docker.com/docker-id/](https://docs.docker.com/docker-id/).  
 2. The docker account must be registered with the ISAM image in Docker Store.  This can be achieved by accessing the Web page for the ISAM docker image ([https://store.docker.com/images/ibm-security-access-manager](https://store.docker.com/images/ibm-security-access-manager)), selecting the 'Proceed to Checkout' link and then accepting the terms and conditions.
 3. A secret must be created which contains the docker account information.  This secret should be supplied as the global.imageCredentials.dockerSecret configuration parameter.  The simplest way to create the secret is to use the kubectl command:
-    
+
    ```
    kubectl create secret docker-registry <secret-name> \
               --docker-username=<username> --docker-password=<password> \
-              --docker-email=<e-mail> 
+              --docker-email=<e-mail>
    ```
 
 ### Administrator Password
@@ -45,27 +45,29 @@ The administrator password will reside within a Kubernetes secret, with a secret
 
 The simplest way to create the secret is to use the kubectl command:
 
-   ```
-   kubectl create secret generic <secret-name> --from-literal=adminPassword=<password> 
-   ```
-   
-### PersistentVolume Requirements
+```
+kubectl create secret generic <secret-name> --from-literal=adminPassword=<password>
+```
 
-A Persistent Volume is required if persistence is enabled and no dynamic provisioning has been set up. You can create a persistent volume through a yaml file. For example:
+### PersistentVolumeClaim Requirements
+
+A Persistent Volume Claim is required if persistence is enabled and no dynamic provisioning has been set up. You can create a persistent volume claim through a yaml file. For example:
 
 ```
 apiVersion: v1
-kind: PersistentVolume
+kind: PersistentVolumeClaim
 metadata:
   name: <persistent volume name>
 spec:
-  capacity:
-    storage: 20Gi
+  storageClassName: <storage class name>
   accessModes:
     - ReadWriteOnce
-  hostPath:
-    path: <PATH>
+  resources:
+    requests:
+      storage: 20Gi
 ```
+
+
 
 To create the persistent volume using a file called `pv.yaml`:
 
@@ -85,14 +87,14 @@ apiVersion: extensions/v1beta1
 kind: PodSecurityPolicy
 metadata:
   annotations:
-    kubernetes.io/description: "This policy allows pods to run with 
+    kubernetes.io/description: "This policy allows pods to run with
       any UID and GID, but preventing access to the host."
   name: isam-anyuid-psp
 spec:
   allowPrivilegeEscalation: true
   fsGroup:
     rule: RunAsAny
-  requiredDropCapabilities: 
+  requiredDropCapabilities:
   - MKNOD
   allowedCapabilities:
   - SETPCAP
@@ -107,7 +109,7 @@ spec:
   - SETGID
   - NET_BIND_SERVICE
   - SYS_CHROOT
-  - SETFCAP 
+  - SETFCAP
   runAsUser:
     rule: RunAsAny
   seLinux:
@@ -121,8 +123,8 @@ spec:
   - secret
   - downwardAPI
   - persistentVolumeClaim
-  forbiddenSysctls: 
-  - '*' 
+  forbiddenSysctls:
+  - '*'
 ```
 
 To create a security policy using a file called `sec_policy.yaml`:
@@ -192,6 +194,7 @@ The minimum resources required for each of the container types are:
 | isamrt         | 1Gi            | 1000m
 | isamdsc        | 512Mi          | 500m
 | isampostgresql | 512Mi          | 500m
+| isamopenldap   | 512Mi          | 500m
 
 The 1Gi and 1000m minimum values here have been reduced in these charts to allow installation on a local test environment.
 
@@ -225,7 +228,7 @@ When deleting a release with stateful sets the associated persistent volume will
 
 ```console
 $ kubectl delete pvc -l release=my-release
-``` 
+```
 
 ## Configuration
 The following tables list the configurable parameters of the ISAM chart, along with their default values.
@@ -245,10 +248,7 @@ The following tables list the configurable parameters of the ISAM chart, along w
 | `global.container.autoReloadInterval` | The interval, in seconds, that the runtime containers will wait before checking to see if any new configuration is available. | disabled
 | `global.persistence.enabled` | Whether to use a PVC to persist data. | `true` |
 | `global.persistence.useDynamicProvisioning` | Whether the requested volume will be automatically provisioned if dynamic provisioning is available. | `true` |
-| `global.dataVolume.existingClaimName` | The name of an existing PersistentVolumeClaim to be used.| empty |
-| `global.dataVolume.storageClassName` | The storage class of the backing PVC. | empty |
-| `global.dataVolume.accessModes` | The access mode for the PVC. | `ReadWriteMany` |
-| `global.dataVolume.size` | The size of the data volume. | `20Gi` |
+
 
 ### Configuration Service
 
@@ -259,6 +259,9 @@ The following tables list the configurable parameters of the ISAM chart, along w
 | `isamconfig.resources.limits.memory` | The maximum amount of memory to be used by the configuration service. | `2Gi` |
 | `isamconfig.resources.limits.cpu` | The maximum amount of CPU to be used by the configuration service. | `2000m` |
 | `isamconfig.service.type` | The service type for the configuration service. | `NodePort` |
+| `isamconfig.dataVolume.existingClaimName` | The name of an existing PersistentVolumeClaim to be used.| empty |
+| `isamconfig.dataVolume.storageClassName` | The storage class of the backing PVC. | empty |
+| `isamconfig.dataVolume.size` | The size of the data volume. | `20Gi` |
 
 ### Web Reverse Proxy Service
 
@@ -299,23 +302,28 @@ The following tables list the configurable parameters of the ISAM chart, along w
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `isampostgresql.container.enabled` | Whether the demonstration PostgreSQL service is required. | `false` |
-| `isampostgresql.container.keySecretName` | An existing secret containing server.pem for secure communication | empty |
+| `isampostgresql.container.keySecretName` | An existing secret which contains the server.pem to be used by the server.  If no secret is supplied the server will only support 'unsecure' communication. The certificate file can be added as a secret using the following command: `kubectl create secret generic <secret-name> --from-file server.pem`.| empty |
 | `isampostgresql.resources.requests.memory` | The amount of memory to be allocated to the demonstration PostgreSQL service. | `512Mi` |
 | `isampostgresql.resources.requests.cpu` | The amount of CPU to be allocated to the demonstration PostgreSQL service. | `500m` |
 | `isampostgresql.resources.limits.memory` | The maximum amount of memory to be used by the demonstration PostgreSQL service. | `1Gi` |
 | `isampostgresql.resources.limits.cpu` | The maximum amount of CPU to be used by the demonstration PostgreSQL service. | `1000m` |
+| `isampostgresql.dataVolume.existingClaimName` | The name of an existing PersistentVolumeClaim to be used.| empty |
+| `isampostgresql.dataVolume.storageClassName` | The storage class of the backing PVC. | empty |
+| `isampostgresql.dataVolume.size` | The size of the data volume. | `20Gi` |
 
 ### Directory
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `isamopenldap.container.enabled` | Whether the demonstration PostgreSQL service is required. | `false` |
+| `isamopenldap.container.enabled` | Whether the demonstration OpenLDAP service is required. | `false` |
 | `isamopenldap.container.keySecretName` | An existing secret containing cert and key for secure communication | empty |
-| `isamopenldap.resources.requests.memory` | The amount of memory to be allocated to the demonstration PostgreSQL service. | `512Mi` |
-| `isamopenldap.resources.requests.cpu` | The amount of CPU to be allocated to the demonstration PostgreSQL service. | `500m` |
-| `isamopenldap.resources.limits.memory` | The maximum amount of memory to be used by the demonstration PostgreSQL service. | `1Gi` |
-| `isamopenldap.resources.limits.cpu` | The maximum amount of CPU to be used by the demonstration PostgreSQL service. | `1000m` |
-
+| `isamopenldap.resources.requests.memory` | The amount of memory to be allocated to the demonstration OpenLDAP service. | `512Mi` |
+| `isamopenldap.resources.requests.cpu` | The amount of CPU to be allocated to the demonstration OpenLDAP service. | `500m` |
+| `isamopenldap.resources.limits.memory` | The maximum amount of memory to be used by the demonstration OpenLDAP service. | `1Gi` |
+| `isamopenldap.resources.limits.cpu` | The maximum amount of CPU to be used by the demonstration OpenLDAP service. | `1000m` |
+| `isamopenldap.dataVolume.existingClaimName` | The name of an existing PersistentVolumeClaim to be used.| empty |
+| `isamopenldap.dataVolume.storageClassName` | The storage class of the backing PVC. | empty |
+| `isamopenldap.dataVolume.size` | The size of the data volume. | `20Gi` |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.  For example:
 
@@ -335,7 +343,7 @@ Different types of persistent storage are supported by this chart:
 
 - Persistent storage using Kubernetes dynamic provisioning. Uses the default storage class defined by the Kubernetes admin or by using a custom storage class which will override the default.
   - Set global values to:
-    - persistence.enabled: true 
+    - persistence.enabled: true
     - persistence.useDynamicProvisioning: true
   - Specify a custom storageClassName per volume or leave the value empty to use the default storage class.
 
@@ -353,7 +361,7 @@ Different types of persistent storage are supported by this chart:
     - persistence.useDynamicProvisioning: false
 
 
-The chart mounts a [Persistent Volume](http://kubernetes.io/docs/user-guide/persistent-volumes/). The volume is created using dynamic volume provisioning. If the PersistentVolumeClaim should not be managed by the chart, define `global.dataVolume.existingClaimName`.
+The chart mounts a [Persistent Volume](http://kubernetes.io/docs/user-guide/persistent-volumes/). The volume is created using dynamic volume provisioning. If the PersistentVolumeClaim should not be managed by the chart, define the `isamconfig.dataVolume.existingClaimName`, 'isampostgresql.dataVolume.existingClaimName', and 'isamopenldap.dataVolume.existingClaimName' parameters.
 
 ### Existing PersistentVolumeClaims
 
@@ -361,7 +369,7 @@ The chart mounts a [Persistent Volume](http://kubernetes.io/docs/user-guide/pers
 1. Create the PersistentVolumeClaim
 1. Install the chart
 ```bash
-$ helm install --set global.dataVolume.existingClaimName=PVC_NAME
+$ helm install --set isamconfig.dataVolume.existingClaimName=PVC_NAME
 ```
 
 All containers within the chart will share the same persistent volume claim.  
@@ -373,4 +381,3 @@ All containers within the chart will share the same persistent volume claim.
 
 ## Documentation
 The official ISAM documentation can be located in the IBM knowledge centre: [https://www.ibm.com/support/knowledgecenter/en/SSPREK/welcome.html](https://www.ibm.com/support/knowledgecenter/en/SSPREK/welcome.html).
-

@@ -1,18 +1,18 @@
-{{- include "sch.config.init" (list . "isam.sch.chart.config.values") -}}
-
+{{- include "sch.config.init" (list . "isamopenldap.sch.chart.config.values") -}}
 #
 # This file contains the definitions for the data volume used by this helm
 # chart.  We only create a persistent volume claim if persistence has been
 # enabled and an existing volume claim has not been specified.
 #
 
-{{ if and .Values.global.persistence.enabled (not .Values.global.dataVolume.existingClaimName) -}}
+{{ if and .Values.global.persistence.enabled (not .Values.dataVolume.existingClaimName) -}}
 
+{{- if .Values.container.enabled }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 
 metadata:
-  name: {{ template "pvc.name" . }}
+  name: {{ template "openldap.pvc.name" . }}
   labels:
 {{ include "sch.metadata.labels.standard" (list . "") | indent 4 }}
 
@@ -22,17 +22,18 @@ spec:
   ## default storageClass setup by the kube Administrator
   ##
   ## setting storageClassName to nil means use the default storage class
-  storageClassName: {{ default nil .Values.global.dataVolume.storageClassName | quote }}
+  storageClassName: {{ default nil .Values.dataVolume.storageClassName | quote }}
   {{- else }}
-  storageClassName: {{ default "" .Values.global.dataVolume.storageClassName | quote }}
+  storageClassName: {{ default "" .Values.dataVolume.storageClassName | quote }}
   {{- end }}
 
   accessModes:
-    - "{{ .Values.global.dataVolume.accessModes  }}"
+    - ReadWriteOnce
 
   resources:
     requests:
-      storage: {{ .Values.global.dataVolume.size | quote }}
-{{- end }}
- 
+      storage: {{ .Values.dataVolume.size | quote }}
 
+{{- end }}
+
+{{- end }}

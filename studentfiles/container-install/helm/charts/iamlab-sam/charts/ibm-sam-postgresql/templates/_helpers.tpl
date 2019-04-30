@@ -18,7 +18,7 @@ main chart _helpers.tpl file.
 */}}
 
 {{/*
-The full name for this chart.  We need to truncate the length of the name due 
+The full name for this chart.  We need to truncate the length of the name due
 to restrictions in the DNS.
 */}}
 
@@ -42,3 +42,13 @@ Our postgresql database details
 {{- printf "5432" -}}
 {{- end -}}
 
+{{/*
+The name of our persistent volume claim.
+*/}}
+{{- define "postgresql.pvc.name" -}}
+{{- if .Values.dataVolume.existingClaimName -}}
+{{- printf "%s" .Values.dataVolume.existingClaimName -}}
+{{- else }}
+{{- printf "%s-pvc-db" .Release.Name -}}
+{{- end }}
+{{- end -}}

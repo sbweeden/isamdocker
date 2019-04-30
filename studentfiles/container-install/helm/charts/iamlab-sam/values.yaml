@@ -24,26 +24,12 @@ global:
     snapshot:            ""
     fixpacks:            ""
     adminSecret:         ""
-    autoReloadInterval: 
+    autoReloadInterval:
 
   # Persistence Storage
   persistence:
     enabled:                true
     useDynamicProvisioning: true
-
-  # Data Volume
-  dataVolume:
-
-    # Specify the name of the Existing Claim to be used by your application.
-    # An empty string means that an existing claim will not be used.
-    existingClaimName: ""
-
-    # Specify the name of the storage class.  Any empty string means that we
-    # won't use a storage class.
-    storageClassName: ""
-
-    accessModes: ReadWriteMany
-    size:        20Gi
 
 ###############################################################################
 # Configuration container variables.
@@ -64,6 +50,19 @@ isamconfig:
   # Service Configuration.
   service:
     type: NodePort
+
+  # Data Volume
+  dataVolume:
+
+    # Specify the name of the Existing Claim to be used by your application.
+    # An empty string means that an existing claim will not be used.
+    existingClaimName: ""
+
+    # Specify the name of the storage class.  Any empty string means that we
+    # won't use a storage class.
+    storageClassName: ""
+
+    size:        20Gi
 
 ###############################################################################
 # Web Reverse Proxy container variables.
@@ -143,7 +142,7 @@ isampostgresql:
   container:
     enabled: false
     keySecretName: ""
-    
+
   # Resource Configuration.
   # Information on computing resources can be found at:
   #    http://kubernetes.io/docs/user-guide/compute-resources/
@@ -154,6 +153,19 @@ isampostgresql:
     limits:
       memory: 1Gi
       cpu:    1000m
+
+  # Data Volume
+  dataVolume:
+
+    # Specify the name of the Existing Claim to be used by your application.
+    # An empty string means that an existing claim will not be used.
+    existingClaimName: ""
+
+    # Specify the name of the storage class.  Any empty string means that we
+    # won't use a storage class.
+    storageClassName: ""
+
+    size:        20Gi
 
 ###############################################################################
 # openldap container variables.
@@ -164,7 +176,7 @@ isamopenldap:
   container:
     enabled: false
     keySecretName: ""
-    
+
   # Resource Configuration.
   # Information on computing resources can be found at:
   #    http://kubernetes.io/docs/user-guide/compute-resources/
@@ -176,3 +188,15 @@ isamopenldap:
       memory: 1Gi
       cpu:    1000m
 
+  # Data Volume
+  dataVolume:
+
+    # Specify the name of the Existing Claim to be used by your application.
+    # An empty string means that an existing claim will not be used.
+    existingClaimName: ""
+
+    # Specify the name of the storage class.  Any empty string means that we
+    # won't use a storage class.
+    storageClassName: ""
+
+    size:        20Gi

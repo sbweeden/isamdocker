@@ -133,6 +133,64 @@ global:
         immutable: false
         required: true
 
+
+###############################################################################
+# Configuration container variables.
+
+isamconfig:
+  __metadata:
+    label: "Configuration Utility"
+    description: "Configuration details associated with the configuration utility."
+
+  # Resource Configuration.
+  resources:
+    label: "Resource configuration"
+    description: "Configuration details associated with resource allocation."
+    requests:
+      cpu:
+        __metadata:
+          label: "CPU request"
+          description: "The amount of CPU requested."
+          type: "string"
+          required: true
+      memory:
+        __metadata:
+          label: "Memory request"
+          description: "The amount of memory requested."
+          type: "string"
+          required: true
+    limits:
+      cpu:
+        __metadata:
+          label: "CPU limit"
+          description: "The CPU limit."
+          type: "string"
+          required: true
+      memory:
+        __metadata:
+          label: "Memory limit"
+          description: "The memory limit."
+          type: "string"
+          required: true
+
+  # Service Configuration.
+  service:
+    label: "Service configuration"
+    description: "Configuration details associated with the service to be created."
+    type:
+      __metadata:
+        name: "Type"
+        label: "Service type"
+        description: "This is the Service Type of the configuration service."
+        type: "string"
+        immutable: false
+        required: true
+        options:
+          - label: "Cluster IP"
+            value: "ClusterIP"
+          - label: "Node Port"
+            value: "NodePort"
+
   # Data Volume Configuration.
   dataVolume:
     label: "Data volume configuration"
@@ -148,92 +206,19 @@ global:
     storageClassName:
       __metadata:
         name: "storageClassName"
-        label: "Existing storage class name"
+        label: "Storage class name"
         description: "Choose a specific storage class name. Defaults to the default storage class in the cluster."
         type: "string"
         immutable: false
         required: false
-    accessModes:
-      __metadata:
-        name: "accessModes"
-        label: "Access mode for the volume claim"
-        description: "The access mode for the volume claim.  Defaults to 'ReadWriteMany'."
-        type: "string"
-        immutable: false
-        required: true
-        options:
-        - label: "ReadWriteOnce"
-          value: "ReadWriteOnce"
-        - label: "ReadOnlyMany"
-          value: "ReadOnlyMany"
-        - label: "ReadWriteMany"
-          value: "ReadWriteMany"
     size:
       __metadata:
         name: "size"
         label: "Size of the volume claim."
-        description: "Defaults to 20Gi of storage. The volume must be large enough to store all of the data files for the ISAM environment."
+        description: "Defaults to 20Gi of storage. The volume must be large enough to store the configuration data for the ISAM environment."
         type: "string"
         immutable: false
         required: true
-
-###############################################################################
-# Configuration container variables.
-
-isamconfig:
-  __metadata:
-    label: "Configuration Utility"
-    description: "Configuration details associated with the configuration utility."
-
-  # Resource Configuration.
-  resources:
-    label: "Resource configuration"
-    description: "Configuration details associated with resource allocation."
-    requests:
-      cpu: 
-        __metadata: 
-          label: "CPU request"
-          description: "The amount of CPU requested."
-          type: "string"
-          required: true   
-      memory: 
-        __metadata: 
-          label: "Memory request"
-          description: "The amount of memory requested."
-          type: "string"
-          required: true   
-    limits:
-      cpu: 
-        __metadata: 
-          label: "CPU limit"
-          description: "The CPU limit."
-          type: "string"
-          required: true   
-      memory: 
-        __metadata: 
-          label: "Memory limit"
-          description: "The memory limit."
-          type: "string"
-          required: true   
-  
-  # Service Configuration.
-  service:
-    label: "Service configuration"
-    description: "Configuration details associated with the service to be created."
-    type: 
-      __metadata:
-        name: "Type"
-        label: "Service type"
-        description: "This is the Service Type of the configuration service."
-        type: "string"
-        immutable: false
-        required: true
-        options:
-          - label: "Cluster IP"
-            value: "ClusterIP"
-          - label: "Node Port"
-            value: "NodePort"
-
 ###############################################################################
 # Web Reverse Proxy container variables.
 
@@ -246,14 +231,14 @@ isamwrp:
   container:
     label: "Container configuration"
     description: "Configuration details associated with the Web reverse proxy service to be created."
-    instances: 
+    instances:
       __metadata:
         name: "instances"
         label: "List of instances"
         description: "An array of WRP instances to create (instance names)."
         type: "string"
         required: true
-    replicas: 
+    replicas:
       __metadata:
         name: "replicas"
         label: "Number of replicas"
@@ -266,37 +251,37 @@ isamwrp:
     label: "Resource configuration"
     description: "Configuration details associated with resource allocation."
     requests:
-      cpu: 
-        __metadata: 
+      cpu:
+        __metadata:
           label: "CPU request"
           description: "The amount of CPU requested."
           type: "string"
-          required: true   
-      memory: 
-        __metadata: 
+          required: true
+      memory:
+        __metadata:
           label: "Memory request"
           description: "The amount of memory requested."
           type: "string"
-          required: true   
+          required: true
     limits:
-      cpu: 
-        __metadata: 
+      cpu:
+        __metadata:
           label: "CPU limit"
           description: "The CPU limit."
           type: "string"
-          required: true   
-      memory: 
-        __metadata: 
+          required: true
+      memory:
+        __metadata:
           label: "Memory limit"
           description: "The memory limit."
           type: "string"
-          required: true   
-  
+          required: true
+
   # Service Configuration.
   service:
     label: "Service configuration"
     description: "Configuration details associated with the service to be created."
-    type: 
+    type:
       __metadata:
         name: "Type"
         label: "Service type"
@@ -322,7 +307,7 @@ isamruntime:
   container:
     label: "Container configuration"
     description: "Configuration details associated with the runtime service to be created."
-    enabled: 
+    enabled:
       __metadata:
         name: "enabled"
         label: "Enabled"
@@ -330,7 +315,7 @@ isamruntime:
         type: "boolean"
         immutable: false
         required: true
-    replicas: 
+    replicas:
       __metadata:
         name: "replicas"
         label: "Number of replicas"
@@ -343,31 +328,31 @@ isamruntime:
     label: "Resource configuration"
     description: "Configuration details associated with resource allocation."
     requests:
-      cpu: 
-        __metadata: 
+      cpu:
+        __metadata:
           label: "CPU request"
           description: "The amount of CPU requested."
           type: "string"
-          required: true   
-      memory: 
-        __metadata: 
+          required: true
+      memory:
+        __metadata:
           label: "Memory request"
           description: "The amount of memory requested."
           type: "string"
-          required: true   
+          required: true
     limits:
-      cpu: 
-        __metadata: 
+      cpu:
+        __metadata:
           label: "CPU limit"
           description: "The CPU limit."
           type: "string"
-          required: true   
-      memory: 
-        __metadata: 
+          required: true
+      memory:
+        __metadata:
           label: "Memory limit"
           description: "The memory limit."
           type: "string"
-          required: true   
+          required: true
 
 ###############################################################################
 # Distributed session cache container variables.
@@ -381,7 +366,7 @@ isamdsc:
   container:
     label: "Container configuration"
     description: "Configuration details associated with the DSC service to be created."
-    enabled: 
+    enabled:
       __metadata:
         name: "enabled"
         label: "Enabled"
@@ -389,7 +374,7 @@ isamdsc:
         type: "boolean"
         immutable: false
         required: true
-    useReplica: 
+    useReplica:
       __metadata:
         name: "useReplica"
         label: "Use replica"
@@ -403,31 +388,31 @@ isamdsc:
     label: "Resource configuration"
     description: "Configuration details associated with resource allocation."
     requests:
-      cpu: 
-        __metadata: 
+      cpu:
+        __metadata:
           label: "CPU request"
           description: "The amount of CPU requested."
           type: "string"
-          required: true   
-      memory: 
-        __metadata: 
+          required: true
+      memory:
+        __metadata:
           label: "Memory request"
           description: "The amount of memory requested."
           type: "string"
-          required: true   
+          required: true
     limits:
-      cpu: 
-        __metadata: 
+      cpu:
+        __metadata:
           label: "CPU limit"
           description: "The CPU limit."
           type: "string"
-          required: true   
-      memory: 
-        __metadata: 
+          required: true
+      memory:
+        __metadata:
           label: "Memory limit"
           description: "The memory limit."
           type: "string"
-          required: true   
+          required: true
 
 ###############################################################################
 # postgresql container variables.
@@ -441,7 +426,7 @@ isampostgresql:
   container:
     label: "Container configuration"
     description: "Configuration details associated with the demonstration PostgreSQL service to be created."
-    enabled: 
+    enabled:
       __metadata:
         name: "enabled"
         label: "Enabled"
@@ -457,37 +442,66 @@ isampostgresql:
         type: "string"
         immutable: false
         required: false
-  
-# Resource Configuration.
+
+  # Resource Configuration.
   resources:
     label: "Resource configuration"
     description: "Configuration details associated with resource allocation."
     requests:
-      cpu: 
-        __metadata: 
+      cpu:
+        __metadata:
           label: "CPU request"
           description: "The amount of CPU requested."
           type: "string"
-          required: true   
-      memory: 
-        __metadata: 
+          required: true
+      memory:
+        __metadata:
           label: "Memory request"
           description: "The amount of memory requested."
           type: "string"
-          required: true   
+          required: true
     limits:
-      cpu: 
-        __metadata: 
+      cpu:
+        __metadata:
           label: "CPU limit"
           description: "The CPU limit."
           type: "string"
-          required: true   
-      memory: 
-        __metadata: 
+          required: true
+      memory:
+        __metadata:
           label: "Memory limit"
           description: "The memory limit."
           type: "string"
-          required: true   
+          required: true
+
+  # Data Volume Configuration.
+  dataVolume:
+    label: "Data volume configuration"
+    description: "Configuration details associated with the data volume."
+    existingClaimName:
+      __metadata:
+        name: "existingClaimName"
+        label: "Existing volume claim"
+        description: "By default a new persistent volume claim will be created. Specify an existing claim here if one is available."
+        type: "string"
+        immutable: false
+        required: false
+    storageClassName:
+      __metadata:
+        name: "storageClassName"
+        label: "Storage class name"
+        description: "Choose a specific storage class name. Defaults to the default storage class in the cluster."
+        type: "string"
+        immutable: false
+        required: false
+    size:
+      __metadata:
+        name: "size"
+        label: "Size of the volume claim."
+        description: "Defaults to 20Gi of storage. The volume must be large enough to store the runtime database for the ISAM environment."
+        type: "string"
+        immutable: false
+        required: true
 
 ###############################################################################
 # openldap container variables.
@@ -501,7 +515,7 @@ isamopenldap:
   container:
     label: "Container configuration"
     description: "Configuration details associated with the demonstration OpenLDAP service to be created."
-    enabled: 
+    enabled:
       __metadata:
         name: "enabled"
         label: "Enabled"
@@ -517,35 +531,63 @@ isamopenldap:
         type: "string"
         immutable: false
         required: false
-  
+
 # Resource Configuration.
   resources:
     label: "Resource configuration"
     description: "Configuration details associated with resource allocation."
     requests:
-      cpu: 
-        __metadata: 
+      cpu:
+        __metadata:
           label: "CPU request"
           description: "The amount of CPU requested."
           type: "string"
-          required: true   
-      memory: 
-        __metadata: 
+          required: true
+      memory:
+        __metadata:
           label: "Memory request"
           description: "The amount of memory requested."
           type: "string"
-          required: true   
+          required: true
     limits:
-      cpu: 
-        __metadata: 
+      cpu:
+        __metadata:
           label: "CPU limit"
           description: "The CPU limit."
           type: "string"
-          required: true   
-      memory: 
-        __metadata: 
+          required: true
+      memory:
+        __metadata:
           label: "Memory limit"
           description: "The memory limit."
           type: "string"
-          required: true   
+          required: true
 
+  # Data Volume Configuration.
+  dataVolume:
+    label: "Data volume configuration"
+    description: "Configuration details associated with the data volume."
+    existingClaimName:
+      __metadata:
+        name: "existingClaimName"
+        label: "Existing volume claim"
+        description: "By default a new persistent volume claim will be created. Specify an existing claim here if one is available."
+        type: "string"
+        immutable: false
+        required: false
+    storageClassName:
+      __metadata:
+        name: "storageClassName"
+        label: "Storage class name"
+        description: "Choose a specific storage class name. Defaults to the default storage class in the cluster."
+        type: "string"
+        immutable: false
+        required: false
+    size:
+      __metadata:
+        name: "size"
+        label: "Size of the volume claim."
+        description: "Defaults to 20Gi of storage. The volume must be large enough to store the runtime database for the ISAM environment."
+        type: "string"
+        immutable: false
+        required: true

@@ -5,7 +5,7 @@
 {{- $instance := . -}}
 
 #
-# This file contains the main deployment definition used by the helm chart 
+# This file contains the main deployment definition used by the helm chart
 # installation.
 #
 
@@ -33,7 +33,7 @@ spec:
         # XXX: For some reason the 'app' label needs to be the fully qualified
         #      application name else the helm_test command fails because we
         #      can't resolve the application name.  This should be revisited
-        #      at some point in the future so that we can make use of the 
+        #      at some point in the future so that we can make use of the
         #      sch.metadata.labels.standard tag.
         app: {{ include "wrp.name" (list $dot $instance) }}
         chart: {{ $.Chart.Name }}
@@ -138,21 +138,6 @@ spec:
         resources:
 {{ toYaml $.Values.resources | indent 10 }}
 
-        volumeMounts:
-        - name: {{ template "pvc.name" $dot }}
-          mountPath: /var/application.logs
-          subPath: wrp.logs
-
-      volumes:
-        - name: {{ template "pvc.name" $dot }}
-        {{- if $.Values.global.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ template "pvc.name" $dot }}
-        {{- else }}
-          emptyDir: {}
-        {{- end }}
-
 ---
 
 {{- end -}}
-

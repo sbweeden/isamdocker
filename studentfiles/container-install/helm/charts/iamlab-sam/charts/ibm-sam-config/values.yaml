@@ -29,6 +29,7 @@ global:
   # Data Volume
   dataVolume:
     existingClaimName: ""
+    size: 20Gi
 
 ###############################################################################
 # Resource Configuration.
@@ -48,4 +49,3 @@ resources:
 
 service:
   type: NodePort
-
