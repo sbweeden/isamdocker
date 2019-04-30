@@ -88,6 +88,14 @@ To set up an environment using Helm, use the files in studentfiles/container-ins
 
 These scripts assume that you have the `kubectl` and `helm` utilities installed and that thy are configured to talk to a cluster where tiller has been installed.  To install tiller to your cluster, use the command `helm init`.
 
+In some systems Tiller will need to be given administration rights to be able to administer the cluster.  In this case, the following commands can be used:
+```
+kubectl create serviceaccount --namespace kube-system tiller
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'      
+helm init --service-account tiller --upgrade
+```
+
 First, run `./create-docker-store-secret.sh` command and provide your Docker credentials.
 
 Next, run `./create-secrets.sh` command to create the secrets required for the environment.
@@ -100,6 +108,7 @@ IMPORTANT: The Helm Charts shown here are modified from the charts provided with
 - Ability to include an OpenLDAP deployment in the release
 - Ability to specify pre-created secrets for key materials for OpenLDAP and PostgreSQL deployments
 - Ability to specify the names of Reverse Proxy instances
+- Use of ReadWriteOnce PVCs
 
 If you want to be able to restore a configuration archive created in other environments described here, you will need to allow the names used in the other deployments to resolve here.  If your Kubernetes cluster uses CoreDNS, you can use command `kubectl create -f update-coredns.yaml` to add suitable rewrite rules.  Otherwise you will need to manually modify the configuration after deployment to replace hostnames wherever they appear.
 
