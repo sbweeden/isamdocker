@@ -1,6 +1,6 @@
 
 charts:
-  - archive: file:iamlab-sam-0.1.0.tgz
+  - archive: file:iamlab-sam-0.2.0.tgz
     repository-keys: 
       - global.image.repository
       - global.image.dbrepository

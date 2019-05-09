@@ -72,7 +72,7 @@ isamwrp:
   # Container configuration.
   container:
     instances:
-     - rp1
+     - default
     replicas:  1
 
   # Resource Configuration.
