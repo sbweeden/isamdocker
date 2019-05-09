@@ -9,7 +9,7 @@ data:
         errors
         health
         rewrite name isamconfig iamlab-isamconfig.default.svc.cluster.local
-        rewrite name isamwrprp1 iamlab-isamwrp-0.default.svc.cluster.local
+        rewrite name isamwrprp1 iamlab-isamwrp-rp1.default.svc.cluster.local
         rewrite name postgresql iamlab-isampostgresql.default.svc.cluster.local
         rewrite name isamruntime iamlab-isamruntime.default.svc.cluster.local
         rewrite name isamdsc iamlab-isamdsc-primary.default.svc.cluster.local
