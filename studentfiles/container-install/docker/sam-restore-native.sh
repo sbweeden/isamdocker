@@ -42,7 +42,10 @@ docker exec -- ${POSTGRESQL} rm /tmp/isam.db
 ISAMCONFIG="isamconfig"
 
 # Copy snapshots to the isamconfig container
-docker cp ${TMPDIR}/*.snapshot ${ISAMCONFIG}:/var/shared/snapshots
+SNAPSHOTS=`ls ${TMPDIR}/*.snapshot`
+for SNAPSHOT in $SNAPSHOTS; do
+docker cp ${SNAPSHOT} ${ISAMCONFIG}:/var/shared/snapshots
+done
 
 rm -rf $TMPDIR
 

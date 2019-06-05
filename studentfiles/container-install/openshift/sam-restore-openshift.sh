@@ -42,7 +42,10 @@ oc exec ${POSTGRESQL} -- rm /tmp/isam.db
 ISAMCONFIG="$(oc get --no-headers=true pods -l app=isamconfig -o custom-columns=:metadata.name)"
 
 # Copy snapshots to the isamconfig container
-oc cp ${TMPDIR}/*.snapshot ${ISAMCONFIG}:/var/shared/snapshots
+SNAPSHOTS=`ls ${TMPDIR}/*.snapshot`
+for SNAPSHOT in $SNAPSHOTS; do
+oc cp ${SNAPSHOT} ${ISAMCONFIG}:/var/shared/snapshots
+done
 
 rm -rf $TMPDIR
 echo Performing reload in config container...

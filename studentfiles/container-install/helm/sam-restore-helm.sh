@@ -42,7 +42,10 @@ kubectl exec ${POSTGRESQL} -- rm /tmp/isam.db
 ISAMCONFIG="$(kubectl get --no-headers=true pods -l app=iamlab-isamconfig -o custom-columns=:metadata.name)"
 
 # Copy snapshots to the isamconfig container
-kubectl cp ${TMPDIR}/*.snapshot ${ISAMCONFIG}:/var/shared/snapshots
+SNAPSHOTS=`ls ${TMPDIR}/*.snapshot`
+for SNAPSHOT in $SNAPSHOTS; do
+kubectl cp ${SNAPSHOT} ${ISAMCONFIG}:/var/shared/snapshots
+done
 
 rm -rf $TMPDIR
 
