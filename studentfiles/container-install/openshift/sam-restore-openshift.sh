@@ -34,9 +34,7 @@ oc exec ${OPENLDAP} -- rm /tmp/ibmcom.ldif
 POSTGRESQL="$(oc get --no-headers=true pods -l app=postgresql -o custom-columns=:metadata.name)"
 
 # Restore DB
-oc cp ${TMPDIR}/isam.db ${POSTGRESQL}:/tmp/isam.db
-oc exec ${POSTGRESQL} -- su postgres -c "/usr/local/bin/psql isam < /tmp/isam.db"
-oc exec ${POSTGRESQL} -- rm /tmp/isam.db
+oc exec ${POSTGRESQL} -i -- /usr/local/bin/psql isam < ${TMPDIR}/isam.db
 
 # Get docker container ID for isamconfig container
 ISAMCONFIG="$(oc get --no-headers=true pods -l app=isamconfig -o custom-columns=:metadata.name)"

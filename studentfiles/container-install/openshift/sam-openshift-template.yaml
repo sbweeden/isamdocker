@@ -94,7 +94,7 @@ objects:
               secretKeyRef:
                 key: adminpw
                 name: samadmin
-          image: docker.io/store/ibmcorp/isam:9.0.6.0
+          image: docker.io/store/ibmcorp/isam:9.0.7.0
           imagePullPolicy: IfNotPresent
           name: isamconfig
           # Fix for PVC ownership root:root. This allows www-data user to access.
@@ -174,7 +174,7 @@ objects:
               secretKeyRef:
                 key: cfgsvcpw
                 name: configreader
-          image: docker.io/store/ibmcorp/isam:9.0.6.0
+          image: docker.io/store/ibmcorp/isam:9.0.7.0
           imagePullPolicy: IfNotPresent
           name: isamdsc
           ports:
@@ -249,7 +249,7 @@ objects:
               secretKeyRef:
                 key: cfgsvcpw
                 name: configreader
-          image: docker.io/store/ibmcorp/isam:9.0.6.0
+          image: docker.io/store/ibmcorp/isam:9.0.7.0
           imagePullPolicy: IfNotPresent
           name: isamruntime
           ports:
@@ -324,7 +324,7 @@ objects:
               secretKeyRef:
                 key: cfgsvcpw
                 name: configreader
-          image: docker.io/store/ibmcorp/isam:9.0.6.0
+          image: docker.io/store/ibmcorp/isam:9.0.7.0
           imagePullPolicy: IfNotPresent
           name: isamwrprp1
           ports:
@@ -390,7 +390,7 @@ objects:
             value: Passw0rd
           - name: LDAP_CONFIG_PASSWORD
             value: Passw0rd
-          image: docker.io/ibmcom/isam-openldap:9.0.6.0
+          image: docker.io/ibmcom/isam-openldap:9.0.7.0
           imagePullPolicy: IfNotPresent
           name: openldap
           ports:
@@ -466,7 +466,7 @@ objects:
             value: isam
           - name: POSTGRES_SSL_KEYDB
             value: /var/local/server.pem
-          image: docker.io/ibmcom/isam-postgresql:9.0.6.0
+          image: docker.io/ibmcom/isam-postgresql:9.0.7.0
           imagePullPolicy: IfNotPresent
           name: postgresql
           ports:

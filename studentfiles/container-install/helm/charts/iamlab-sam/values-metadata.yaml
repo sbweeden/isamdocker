@@ -44,7 +44,7 @@ global:
       __metadata:
         name: "Tag"
         label: "Docker tag"
-        description: "The tag of the image to pull.  This should correspond to the version of ISAM which is being installed (e.g. 9.0.6.0)"
+        description: "The tag of the image to pull.  This should correspond to the version of ISAM which is being installed (e.g. 9.0.7.0)"
         type: "string"
         immutable: false
         required: true

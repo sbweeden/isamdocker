@@ -41,7 +41,7 @@ docker exec -- ${OPENLDAP} ldapsearch -H "ldaps://localhost:636" -L -D "cn=root,
 
 # Get docker container ID for postgresql container
 POSTGRESQL="$(docker-compose -f ${YAML} ps -q postgresql)"
-docker exec -- ${POSTGRESQL} su postgres -c "/usr/local/bin/pg_dump isam" > $TMPDIR/isam.db
+docker exec -- ${POSTGRESQL} /usr/local/bin/pg_dump isam > $TMPDIR/isam.db
 
 cp -R ${DOCKERKEYS} ${TMPDIR}
 cd ${CUR_DIR}

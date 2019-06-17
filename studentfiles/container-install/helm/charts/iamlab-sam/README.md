@@ -239,7 +239,7 @@ The following tables list the configurable parameters of the ISAM chart, along w
 | --------- | ----------- | ------- |
 | `global.image.repository` | The image repository. | `store/ibmcorp/isam` |
 | `global.image.dbrepository` | The image repository for the postgresql server. | `ibmcom/isam-postgresql` |
-| `global.image.tag` | The image version. | `9.0.6.0` |
+| `global.image.tag` | The image version. | `9.0.7.0` |
 | `global.image.pullPolicy` | The image pull policy. | `IfNotPresent` |
 | `global.imageCredentials.dockerSecret` | The name of an existing secret which contains the Docker Store credentials. | (none) |
 | `global.container.snapshot` | The name of the configuration data snapshot that is to be used when starting the container. This will default to the latest published configuration.| latest published snapshot

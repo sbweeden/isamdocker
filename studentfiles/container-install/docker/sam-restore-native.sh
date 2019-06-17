@@ -34,9 +34,7 @@ docker exec -- ${OPENLDAP} rm /tmp/ibmcom.ldif
 POSTGRESQL="postgresql"
 
 # Restore DB
-docker cp ${TMPDIR}/isam.db ${POSTGRESQL}:/tmp/isam.db
-docker exec -- ${POSTGRESQL} su postgres -c "/usr/local/bin/psql isam < /tmp/isam.db"
-docker exec -- ${POSTGRESQL} rm /tmp/isam.db
+docker exec -i -- ${POSTGRESQL} /usr/local/bin/psql isam < ${TMPDIR}/isam.db
 
 # Get docker container ID for isamconfig container
 ISAMCONFIG="isamconfig"

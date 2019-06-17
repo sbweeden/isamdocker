@@ -8,24 +8,24 @@ TMPDIR=/tmp/backup-$RANDOM$RANDOM
 mkdir $TMPDIR
 
 # Get docker container ID for isamconfig container
-ISAMCONFIG="$(kubectl get --no-headers=true pods -l app=isamconfig -o custom-columns=:metadata.name)"
+ISAMCONFIG="$(oc get --no-headers=true pods -l app=isamconfig -o custom-columns=:metadata.name)"
 
 # Copy the current snapshots from isamconfig container
-SNAPSHOTS=`kubectl exec ${ISAMCONFIG} ls /var/shared/snapshots`
+SNAPSHOTS=`oc exec ${ISAMCONFIG} ls /var/shared/snapshots`
 for SNAPSHOT in $SNAPSHOTS; do
-kubectl cp ${ISAMCONFIG}:/var/shared/snapshots/$SNAPSHOT $TMPDIR
+oc cp ${ISAMCONFIG}:/var/shared/snapshots/$SNAPSHOT $TMPDIR
 done
 
 # Get docker container ID for openldap container
-OPENLDAP="$(kubectl get --no-headers=true pods -l app=openldap -o custom-columns=:metadata.name)"
+OPENLDAP="$(oc get --no-headers=true pods -l app=openldap -o custom-columns=:metadata.name)"
 
 # Extract LDAP Data from OpenLDAP
-kubectl exec ${OPENLDAP} -- ldapsearch -H "ldaps://localhost:636" -L -D "cn=root,secAuthority=Default" -w "Passw0rd" -b "secAuthority=Default" -s sub "(objectclass=*)" > $TMPDIR/secauthority.ldif
-kubectl exec ${OPENLDAP} -- ldapsearch -H "ldaps://localhost:636" -L -D "cn=root,secAuthority=Default" -w "Passw0rd" -b "dc=ibm,dc=com" -s sub "(objectclass=*)" > $TMPDIR/ibmcom.ldif
+oc exec ${OPENLDAP} -- ldapsearch -H "ldaps://localhost:636" -L -D "cn=root,secAuthority=Default" -w "Passw0rd" -b "secAuthority=Default" -s sub "(objectclass=*)" > $TMPDIR/secauthority.ldif
+oc exec ${OPENLDAP} -- ldapsearch -H "ldaps://localhost:636" -L -D "cn=root,secAuthority=Default" -w "Passw0rd" -b "dc=ibm,dc=com" -s sub "(objectclass=*)" > $TMPDIR/ibmcom.ldif
 
 # Get docker container ID for postgresql container
-POSTGRESQL="$(kubectl get --no-headers=true pods -l app=postgresql -o custom-columns=:metadata.name)"
-kubectl exec ${POSTGRESQL} -- su postgres -c "/usr/local/bin/pg_dump isam" > $TMPDIR/isam.db
+POSTGRESQL="$(oc get --no-headers=true pods -l app=postgresql -o custom-columns=:metadata.name)"
+oc exec ${POSTGRESQL} -- /usr/local/bin/pg_dump isam > $TMPDIR/isam.db
 
 cp -R ${KEYS} ${TMPDIR}
 

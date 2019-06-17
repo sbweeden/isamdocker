@@ -10,7 +10,7 @@ global:
   # Common image variables
   image:
     dbrepository: ibmcom/isam-postgresql
-    tag:          9.0.6.0
+    tag:          9.0.7.0
     pullPolicy:   IfNotPresent
 
   # Container configuration.

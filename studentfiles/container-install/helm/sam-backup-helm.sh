@@ -25,7 +25,7 @@ kubectl exec ${OPENLDAP} -- ldapsearch -H "ldaps://localhost:636" -L -D "cn=root
 
 # Get docker container ID for postgresql container
 POSTGRESQL="$(kubectl get --no-headers=true pods -l app=iamlab-isampostgresql -o custom-columns=:metadata.name)"
-kubectl exec ${POSTGRESQL} -- su postgres -c "/usr/local/bin/pg_dump isam" > $TMPDIR/isam.db
+kubectl exec ${POSTGRESQL} -- /usr/local/bin/pg_dump isam > $TMPDIR/isam.db
 
 cp -R ${KEYS} ${TMPDIR}
 
