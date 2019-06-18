@@ -100,9 +100,6 @@ objects:
           image: docker.io/store/ibmcorp/isam:9.0.7.0
           imagePullPolicy: IfNotPresent
           name: isamconfig
-          # Fix for PVC ownership root:root. This allows www-data user to access.
-          command: ["/bin/sh"]
-          args: ["-c","chmod 775 /var/shared;/sbin/bootstrap.sh"]
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
