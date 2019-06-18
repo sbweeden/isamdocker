@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: sam9050
+  name: sam9070
 objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
@@ -83,6 +83,10 @@ objects:
           app: isamconfig
       spec:
         serviceAccountName: isam
+        securityContext:
+          runAsNonRoot: true
+          runAsUser:    6000
+          fsGroup: 0
         containers:
         - env:
           - name: SERVICE
@@ -101,13 +105,18 @@ objects:
           command: ["/bin/sh"]
           args: ["-c","chmod 775 /var/shared;/sbin/bootstrap.sh"]
           resources: {}
-          securityContext:
-            capabilities:
-              add:
-              - SYS_PTRACE
-              - SYS_RESOURCE
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+          readinessProbe:
+            tcpSocket:
+              port:  9443
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 9443
+            initialDelaySeconds: 120
+            periodSeconds: 20 
           volumeMounts:
           - mountPath: /var/shared
             name: isamconfig
@@ -118,7 +127,6 @@ objects:
         - name: dockerlogin
         restartPolicy: Always
         schedulerName: default-scheduler
-        securityContext: {}
         terminationGracePeriodSeconds: 30
         volumes:
         - name: isamconfig
@@ -155,6 +163,10 @@ objects:
           app: isamdsc
       spec:
         serviceAccountName: isam
+        securityContext:
+          runAsNonRoot: true
+          runAsUser:    6000
+          fsGroup: 0
         containers:
         - env:
           - name: SERVICE
@@ -183,13 +195,21 @@ objects:
           - containerPort: 444
             protocol: TCP
           resources: {}
-          securityContext:
-            capabilities:
-              add:
-              - SYS_PTRACE
-              - SYS_RESOURCE
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+          livenessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh 
+              - livenessProbe
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+            initialDelaySeconds: 10
+            periodSeconds: 10
           volumeMounts:
           - mountPath: /var/application.logs
             name: isamdsc-logs
@@ -198,7 +218,6 @@ objects:
         - name: dockerlogin
         restartPolicy: Always
         schedulerName: default-scheduler
-        securityContext: {}
         terminationGracePeriodSeconds: 30
         volumes:
         - name: isamdsc-logs
@@ -232,6 +251,10 @@ objects:
           app: isamruntime
       spec:
         serviceAccountName: isam
+        securityContext:
+          runAsNonRoot: true
+          runAsUser:    6000
+          fsGroup: 0
         containers:
         - env:
           - name: SERVICE
@@ -256,13 +279,21 @@ objects:
           - containerPort: 443
             protocol: TCP
           resources: {}
-          securityContext:
-            capabilities:
-              add:
-              - SYS_PTRACE
-              - SYS_RESOURCE
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+          livenessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh 
+              - livenessProbe
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+            initialDelaySeconds: 10
+            periodSeconds: 10
           volumeMounts:
           - mountPath: /var/application.logs
             name: isamruntime-logs
@@ -271,7 +302,6 @@ objects:
         - name: dockerlogin
         restartPolicy: Always
         schedulerName: default-scheduler
-        securityContext: {}
         terminationGracePeriodSeconds: 30
         volumes:
         - name: isamruntime-logs
@@ -305,6 +335,10 @@ objects:
           app: isamwrprp1
       spec:
         serviceAccountName: isam
+        securityContext:
+          runAsNonRoot: true
+          runAsUser:    6000
+          fsGroup: 0
         containers:
         - env:
           - name: SERVICE
@@ -331,13 +365,21 @@ objects:
           - containerPort: 443
             protocol: TCP
           resources: {}
-          securityContext:
-            capabilities:
-              add:
-              - SYS_PTRACE
-              - SYS_RESOURCE
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+          livenessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh 
+              - livenessProbe
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+            initialDelaySeconds: 10
+            periodSeconds: 10
           volumeMounts:
           - mountPath: /var/application.logs
             name: isamwrprp1-logs
@@ -346,7 +388,6 @@ objects:
         - name: dockerlogin
         restartPolicy: Always
         schedulerName: default-scheduler
-        securityContext: {}
         terminationGracePeriodSeconds: 30
         volumes:
         - name: isamwrprp1-logs
@@ -379,7 +420,7 @@ objects:
         labels:
           app: openldap
       spec:
-        serviceAccountName: isam
+        serviceAccountName: openldap
         containers:
         - args:
           - --copy-service
@@ -411,7 +452,6 @@ objects:
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
-        securityContext: {}
         terminationGracePeriodSeconds: 30
         volumes:
         - name: ldapslapd
@@ -456,6 +496,10 @@ objects:
           app: postgresql
       spec:
         serviceAccountName: isam
+        securityContext:
+          runAsNonRoot: true
+          runAsUser:    70
+          fsGroup: 0
         containers:
         - env:
           - name: POSTGRES_USER
@@ -483,7 +527,6 @@ objects:
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
-        securityContext: {}
         terminationGracePeriodSeconds: 30
         volumes:
         - name: postgresqldata
