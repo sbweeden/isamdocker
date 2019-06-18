@@ -1,5 +1,5 @@
 #Assumes create-docker-store-secret.sh used to create dockerlogin secret
-#Assumes create-ldap-and-postgres-keys.sh used to create key file secrets
+#Assumes create-secrets.sh used to create key file, sam admin, and cfgsvc secrets
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -109,7 +109,6 @@ spec:
 #          args: [ "-c", "while /bin/true ; do sleep 5; done" ]
 # Just this line to get debug output from openldap startup
 #          args: [ "--loglevel" , "trace","--copy-service"]
-
 ---
 # for external service access, see https://console.bluemix.net/docs/containers/cs_apps.html#cs_apps_public_nodeport
 apiVersion: v1
@@ -139,6 +138,9 @@ spec:
       labels:
         app: postgresql
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 70
       volumes:
         - name: postgresqldata
           persistentVolumeClaim:
@@ -197,6 +199,9 @@ spec:
       labels:
         app: isamconfig
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser:    6000
       volumes:
         - name: isamconfig
           persistentVolumeClaim:
@@ -211,11 +216,6 @@ spec:
               name: isamconfig
             - mountPath: /var/application.logs
               name: isamconfig-logs
-          securityContext:
-            capabilities:
-              add:
-                - SYS_PTRACE
-                - SYS_RESOURCE
           env:
             - name: SERVICE
               value: config
@@ -226,6 +226,16 @@ spec:
                 secretKeyRef:
                   name: samadmin
                   key: adminpw
+          readinessProbe:
+            tcpSocket:
+              port:  9443
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 9443
+            initialDelaySeconds: 120
+            periodSeconds: 20
 #          command: [ "/sbin/bootstrap.sh" ]
       imagePullSecrets:
         - name: dockerlogin
@@ -260,6 +270,9 @@ spec:
       labels:
         app: isamwrprp1
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser:    6000
       volumes:
         - name: isamconfig
           emptyDir: {}
@@ -275,11 +288,6 @@ spec:
               name: isamconfig
             - mountPath: /var/application.logs
               name: isamwrprp1-logs
-          securityContext:
-            capabilities:
-              add:
-                - SYS_PTRACE
-                - SYS_RESOURCE
           env:
             - name: SERVICE
               value: webseal
@@ -298,6 +306,19 @@ spec:
                 secretKeyRef:
                   name: configreader
                   key: cfgsvcpw
+          livenessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+              - livenessProbe
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+            initialDelaySeconds: 10
+            periodSeconds: 10
       imagePullSecrets:
         - name: dockerlogin
 ---
@@ -330,6 +351,9 @@ spec:
       labels:
         app: isamruntime
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser:    6000
       volumes:
         - name: isamconfig
           emptyDir: {}
@@ -345,11 +369,6 @@ spec:
               name: isamconfig
             - mountPath: /var/application.logs
               name: isamruntime-logs
-          securityContext:
-            capabilities:
-              add:
-                - SYS_PTRACE
-                - SYS_RESOURCE
           env:
             - name: SERVICE
               value: runtime
@@ -366,6 +385,19 @@ spec:
                 secretKeyRef:
                   name: configreader
                   key: cfgsvcpw
+          livenessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+              - livenessProbe
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+            initialDelaySeconds: 10
+            periodSeconds: 10
       imagePullSecrets:
         - name: dockerlogin
 ---
@@ -394,6 +426,9 @@ spec:
       labels:
         app: isamdsc
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser:    6000
       volumes:
         - name: isamconfig
           emptyDir: {}
@@ -410,11 +445,6 @@ spec:
               name: isamconfig
             - mountPath: /var/application.logs
               name: isamdsc-logs
-          securityContext:
-            capabilities:
-              add:
-                - SYS_PTRACE
-                - SYS_RESOURCE
           env:
             - name: SERVICE
               value: dsc
@@ -433,6 +463,19 @@ spec:
                 secretKeyRef:
                   name: configreader
                   key: cfgsvcpw
+          livenessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+              - livenessProbe
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+            initialDelaySeconds: 10
+            periodSeconds: 10
       imagePullSecrets:
         - name: dockerlogin
 ---
