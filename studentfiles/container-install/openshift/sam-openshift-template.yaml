@@ -86,7 +86,6 @@ objects:
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
-          fsGroup: 0
         containers:
         - env:
           - name: SERVICE
@@ -166,7 +165,6 @@ objects:
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
-          fsGroup: 0
         containers:
         - env:
           - name: SERVICE
@@ -254,7 +252,6 @@ objects:
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
-          fsGroup: 0
         containers:
         - env:
           - name: SERVICE
@@ -338,7 +335,6 @@ objects:
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
-          fsGroup: 0
         containers:
         - env:
           - name: SERVICE
@@ -499,7 +495,6 @@ objects:
         securityContext:
           runAsNonRoot: true
           runAsUser:    70
-          fsGroup: 0
         containers:
         - env:
           - name: POSTGRES_USER
