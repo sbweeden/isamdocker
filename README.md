@@ -1,5 +1,5 @@
 # Version Information
-These scripts are for IBM Security Access Manager 9.0.6.0.
+These scripts are for IBM Security Access Manager 9.0.7.0.
 
 # Common Requirements and Setup
 
@@ -116,7 +116,35 @@ The charts used here can be added to IBM Cloud Private by adding a custom reposi
 https://raw.githubusercontent.com/jonpharry/isamdocker/master/studentfiles/container-install/helm/repo
 
 # OpenShift
-This is a work in progress.  OpenShift is not supported by Access Manager at this time.
+To set up an environment using OpenShift, use the files in studentfiles/container-install/openshift.
+
+These scripts assume that you have the `oc` utility installed and it is configured to talk to your OpenShift system.
+
+In some OpenShift environments you will need to grant your user (e.g. developer) access to the sudoers groups so that commands to set up the required security context constraints can be executed using system admin privileges.  To grant this permission, use the following commands:
+
+```
+oc login -u system:admin -n default
+oc adm policy add-role-to-user sudoer <user>
+```
+
+To set up the required security context constaints, run `./setup-security.sh` command.
+
+Next, run `./create-docker-store-secret.sh` command and provide your Docker credentials.
+
+Next, run `./create-secrets.sh` command to create the secrets required for the environment.
+
+Finally, use this command to process the ISAM Template and use the output to deploy:
+
+```
+oc process -f sam-openshift-template.yaml | oc create -f -
+```
+
+Alternatively, you could import the template into the OpenShift Console and deploy it from there.
+
+Once ISAM is deployed, you can run the `./lmi-access.sh` script to start a port-forward session for access to the LMI.
+With this running, you can access LMI using at https://localhost:9443
+
+OpenShift includes a web proxy which can route traffic to the ISAM Reverse Proxy.  You will need to determine the IP address where this is listening and then point www.iamlab.ibm.com to it in your /etc/hosts file.
 
 # Backup and Restore
 
