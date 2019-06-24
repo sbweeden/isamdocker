@@ -1,10 +1,11 @@
 apiVersion: v1
 entries:
   iamlab-sam:
-  - created: 2019-06-17T11:54:30.372075+01:00
+  - appVersion: 9.0.7.0
+    created: "2019-06-24T11:08:20.750608+01:00"
     description: IBM Security Access Manager provides a simplified access management
       solution.
-    digest: 403af548324a74f8d11fc32e32dcc42d87baf6b252fb5c121b0bd7212209bf63
+    digest: ed1037783ee8c9c303e001417446cc516ad03662c31c5595d69736fdf4518045
     engine: gotpl
     home: https://store.docker.com/images/ibm-security-access-manager
     icon: https://d1q6f0aelx0por.cloudfront.net/product-logos/32925feb-af2b-4b4c-8276-def2a031ed31-artwork2x.png
@@ -22,7 +23,7 @@ entries:
     urls:
     - iamlab-sam-0.3.0.tgz
     version: 0.3.0
-  - created: 2019-06-17T11:54:30.368012+01:00
+  - created: "2019-06-24T11:08:20.746268+01:00"
     description: IBM Security Access Manager provides a simplified access management
       solution.
     digest: c1bcafd68f96d56a00f31cdcfe2607ff6bd9856ddd27f3023abd4c4f05d99542
@@ -43,4 +44,4 @@ entries:
     urls:
     - iamlab-sam-0.2.0.tgz
     version: 0.2.0
-generated: 2019-06-17T11:54:30.361236+01:00
+generated: "2019-06-24T11:08:20.738956+01:00"

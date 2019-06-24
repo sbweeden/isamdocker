@@ -11,6 +11,7 @@ icon: https://d1q6f0aelx0por.cloudfront.net/product-logos/32925feb-af2b-4b4c-827
 version: 0.3.0
 tillerVersion: ">=2.9.1"
 engine: gotpl
+appVersion: 9.0.7.0
 
 keywords:
   - isam
