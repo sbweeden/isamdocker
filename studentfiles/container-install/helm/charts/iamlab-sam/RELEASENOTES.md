@@ -1,3 +1,6 @@
+# What's new in IAMLAB SAM v0.3.0 charts
+This version uses ISAM 9.0.7.0 images
+
 # What's new in IAMLAB SAM v0.2.0 charts
 This version uses ReadWriteOnce disks and, to support this, uses separate PVCs for different containers.
 
@@ -20,5 +23,6 @@ For detailed documentation instructions go to [https://www.ibm.com/support/knowl
 
 | Chart | Date | Kubernetes Required | Image(s) Supported | Breaking Changes | Details
 | ----- | ---- | ------------------- | ------------------ | ---------------- | -------
+| 0.3.0 | July 2019  | >= 1.11.x | store/ibmcorp/isam:9.0.7.0; ibmcom/isam-postgresql:9.0.7.0; ibmcom/isam-openldap:9.0.7.0 | ReadWriteOnce Disk | Based on official 1.0.0 chart
 | 0.2.0 | April 2019 | >= 1.11.x | store/ibmcorp/isam:9.0.6.0; ibmcom/isam-postgresql:9.0.6.0; ibmcom/isam-openldap:9.0.6.0 | ReadWriteOnce Disk | Based on official 1.0.0 chart
 | 0.1.0 | February 2019 | >= 1.11.x | store/ibmcorp/isam:9.0.6.0; ibmcom/isam-postgresql:9.0.6.0; ibmcom/isam-openldap:9.0.6.0 | None | Based on official 1.0.0 chart

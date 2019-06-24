@@ -34,9 +34,7 @@ kubectl exec ${OPENLDAP} -- rm /tmp/ibmcom.ldif
 POSTGRESQL="$(kubectl get --no-headers=true pods -l app=iamlab-isampostgresql -o custom-columns=:metadata.name)"
 
 # Restore DB
-kubectl cp ${TMPDIR}/isam.db ${POSTGRESQL}:/tmp/isam.db
-kubectl exec ${POSTGRESQL} -- su postgres -c "/usr/local/bin/psql isam < /tmp/isam.db"
-kubectl exec ${POSTGRESQL} -- rm /tmp/isam.db
+kubectl exec ${POSTGRESQL} -i -- /usr/local/bin/psql isam < ${TMPDIR}/isam.db
 
 # Get docker container ID for isamconfig container
 ISAMCONFIG="$(kubectl get --no-headers=true pods -l app=iamlab-isamconfig -o custom-columns=:metadata.name)"

@@ -1,15 +1,16 @@
 osadminid=system
 osadminpw=admin
 
-echo "Creating isam Service Account"
+echo "Creating Service Accounts"
 oc create serviceaccount isam
+oc create serviceaccount openldap
 
-echo "Creating isam Security Constraint"
-oc create -f isam-scc.yaml --as ${osadminid}:${osadminpw}
+echo "Creating Security Context Constraints"
+oc create -f security-constraints.yaml --as ${osadminid}:${osadminpw}
 
-echo "Adding isam service account to isam Security Constraint"
-oc adm policy add-scc-to-user isam -z isam --as ${osadminid}:${osadminpw}
-
+echo "Adding service accounts to Security Constraints"
+oc adm policy add-scc-to-user isam-scc -z isam --as ${osadminid}:${osadminpw}
+oc adm policy add-scc-to-user openldap-scc -z openldap --as ${osadminid}:${osadminpw}
 echo "Done."
 
 
