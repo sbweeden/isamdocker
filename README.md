@@ -1,6 +1,8 @@
 # Version Information
 These scripts are for IBM Security Access Manager 9.0.7.0.
 
+Scripts for other versions are available as Releases.
+
 # Common Requirements and Setup
 
 These scripts expect to have write access to $HOME and /tmp.
@@ -79,6 +81,8 @@ Once all pods are running, you can run the `./lmi-access.sh` script to start a p
 With this running, you can access LMI using at https://localhost:9443
 
 To access the Reverse Proxy you will need to determine an External IP for a Node in the cluster and then connnect to this using https on port 30443.
+
+For Minikube an Ingress is defined.  This allows direct access to the Reverse Proxy when DNS points www.iamlab.ibm.com to the Minikube ingress controller IP address.
 
 For Google, access to a NodePort requires the following filewall rule to be created:
 `gcloud compute firewall-rules create isamwrp-node-port --allow tcp:30443`
