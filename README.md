@@ -124,18 +124,18 @@ To set up an environment using OpenShift, use the files in studentfiles/containe
 
 These scripts assume that you have the `oc` utility installed and it is configured to talk to your OpenShift system.
 
-In some OpenShift environments you will need to grant your user (e.g. developer) access to the sudoers groups so that commands to set up the required security context constraints can be executed using system admin privileges.  To grant this permission, use the following commands:
+Custom Security Constraints are required to run IBM Security Access Manager under OpenShift.  The Access Manager container requires setuid and setgid permissions.
+In addition, the openldap container requires permission to run as root.
 
-```
-oc login -u system:admin -n default
-oc create clusterrolebinding developer-sudo --clusterrole=sudoer --user=<user>
-```
+You must be a cluster administrator to add security constraints and grant them to service accounts.  For example, login as system user:
 
-Now login as your standard user (e.g. developer)
-
-```oc login```
+```oc login -u system:admin -n <project>```
 
 To set up the required security context constaints, run `./setup-security.sh` command.
+
+Now login as your standard user:
+
+``oc login -u developer -n <project>```
 
 Next, run `./create-docker-store-secret.sh` command and provide your Docker credentials.
 
