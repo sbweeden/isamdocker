@@ -128,7 +128,7 @@ In some OpenShift environments you will need to grant your user (e.g. developer)
 
 ```
 oc login -u system:admin -n default
-oc adm policy add-role-to-user sudoer <user>
+oc create clusterrolebinding developer-sudo --clusterrole=sudoer --user=developer
 ```
 
 To set up the required security context constaints, run `./setup-security.sh` command.
