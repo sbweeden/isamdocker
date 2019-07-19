@@ -135,7 +135,7 @@ To set up the required security context constaints, run `./setup-security.sh` co
 
 Now login as your standard user:
 
-``oc login -u developer -n <project>```
+```oc login -u developer -n <project>```
 
 Next, run `./create-docker-store-secret.sh` command and provide your Docker credentials.
 
