@@ -13,7 +13,7 @@ ISAMCONFIG="$(kubectl get --no-headers=true pods -l app=isamconfig -o custom-col
 # Copy the current snapshots from isamconfig container
 SNAPSHOTS=`kubectl exec ${ISAMCONFIG} ls /var/shared/snapshots`
 for SNAPSHOT in $SNAPSHOTS; do
-kubectl cp ${ISAMCONFIG}:/var/shared/snapshots/$SNAPSHOT $TMPDIR
+kubectl cp ${ISAMCONFIG}:/var/shared/snapshots/$SNAPSHOT $TMPDIR/$SNAPSHOT
 done
 
 # Get docker container ID for openldap container

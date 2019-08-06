@@ -13,7 +13,7 @@ ISAMCONFIG="$(oc get --no-headers=true pods -l app=isamconfig -o custom-columns=
 # Copy the current snapshots from isamconfig container
 SNAPSHOTS=`oc exec ${ISAMCONFIG} ls /var/shared/snapshots`
 for SNAPSHOT in $SNAPSHOTS; do
-oc cp ${ISAMCONFIG}:/var/shared/snapshots/$SNAPSHOT $TMPDIR
+oc cp ${ISAMCONFIG}:/var/shared/snapshots/$SNAPSHOT $TMPDIR/$SNAPSHOT
 done
 
 # Get docker container ID for openldap container
