@@ -141,7 +141,7 @@ spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 70
-        fsGroup: 0
+        fsGroup: 85
       volumes:
         - name: postgresqldata
           persistentVolumeClaim:
