@@ -141,13 +141,16 @@ Next, run `./create-docker-store-secret.sh` command and provide your Docker cred
 
 Next, run `./create-secrets.sh` command to create the secrets required for the environment.
 
-Finally, use this command to process the ISAM Template and use the output to deploy:
+Finally, use these commands to process the ISAM Template and use the output to deploy:
 
 ```
-oc process -f sam-openshift-template.yaml | oc create -f -
+oc process -f sam-openldap-template.yaml | oc create -f -
+oc process -f sam-postgresql-template.yaml | oc create -f -
+oc process -f sam-core-openshift-template.yaml | oc create -f -
+oc process -f sam-rp-openshift-template.yaml | oc create -f -
 ```
 
-Alternatively, you could import the template into the OpenShift Console and deploy it from there.
+Alternatively, you could import the templates into the OpenShift Console and deploy them from there.
 
 Once ISAM is deployed, you can run the `./lmi-access.sh` script to start a port-forward session for access to the LMI.
 With this running, you can access LMI using at https://localhost:9443
