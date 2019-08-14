@@ -1,6 +1,6 @@
 #!/bin/bash
 # Get docker container ID for isamconfig container
-ISAMCONFIG="$(oc get --no-headers=true pods -l app=isamconfig -o custom-columns=:metadata.name)"
+ISAMCONFIG="$(oc get --no-headers=true pods -l app=isam-config -o custom-columns=:metadata.name)"
 
 echo "Setting up tunnel to LMI on isamconfig pod."
 echo "Access LMI at https://localhost:9443"
