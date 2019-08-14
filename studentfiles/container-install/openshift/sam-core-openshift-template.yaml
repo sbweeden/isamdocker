@@ -2,52 +2,17 @@ apiVersion: v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: sam9070
+  name: ibm-sam-core
+  annotations:
+    openshift.io/display-name: IBM SAM Core
+    iconClass: icon-sso
 objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
-    name: isamconfig
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 50Mi
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: postgresqldata
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 50Mi
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: ldaplib
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 50Mi
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: ldapslapd
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 50Mi
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: ldapsecauthority
+    name: ${APP_NAME}-config
+    labels:
+      app: ${APP_NAME}
   spec:
     accessModes:
     - ReadWriteOnce
@@ -62,15 +27,15 @@ objects:
     creationTimestamp: null
     generation: 1
     labels:
-      app: isamconfig
-    name: isamconfig
+      app: ${APP_NAME}
+    name: ${APP_NAME}-config
   spec:
     progressDeadlineSeconds: 600
     replicas: 1
     revisionHistoryLimit: 10
     selector:
       matchLabels:
-        app: isamconfig
+        app: ${APP_NAME}-config
     strategy:
       rollingUpdate:
         maxSurge: 1
@@ -80,9 +45,9 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app: isamconfig
+          app: ${APP_NAME}-config
       spec:
-        serviceAccountName: isam
+        serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
@@ -91,44 +56,44 @@ objects:
           - name: SERVICE
             value: config
           - name: CONTAINER_TIMEZONE
-            value: Europe/London
+            value: ${TIMEZONE}
           - name: ADMIN_PWD
             valueFrom:
               secretKeyRef:
                 key: adminpw
-                name: samadmin
+                name: ${ADMIN_SECRET}
           image: docker.io/store/ibmcorp/isam:9.0.7.0
           imagePullPolicy: IfNotPresent
-          name: isamconfig
+          name: ${APP_NAME}-config
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           readinessProbe:
             tcpSocket:
               port:  9443
-            initialDelaySeconds: 5
+            initialDelaySeconds: 30
             periodSeconds: 10
           livenessProbe:
             tcpSocket:
               port: 9443
             initialDelaySeconds: 120
-            periodSeconds: 20 
+            periodSeconds: 20
           volumeMounts:
           - mountPath: /var/shared
-            name: isamconfig
+            name: ${APP_NAME}-config
           - mountPath: /var/application.logs
-            name: isamconfig-logs
+            name: ${APP_NAME}-config-logs
         dnsPolicy: ClusterFirst
         imagePullSecrets:
-        - name: dockerlogin
+        - name: ${PULL_SECRET}
         restartPolicy: Always
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
         volumes:
-        - name: isamconfig
+        - name: ${APP_NAME}-config
           persistentVolumeClaim:
-            claimName: isamconfig
-        - name: isamconfig-logs
+            claimName: ${APP_NAME}-config
+        - name: ${APP_NAME}-config-logs
           emptyDir: {}
 - apiVersion: apps/v1
   kind: Deployment
@@ -138,15 +103,15 @@ objects:
     creationTimestamp: null
     generation: 1
     labels:
-      app: isamdsc
-    name: isamdsc
+      app: ${APP_NAME}
+    name: ${APP_NAME}-dsc1
   spec:
     progressDeadlineSeconds: 600
     replicas: 1
     revisionHistoryLimit: 10
     selector:
       matchLabels:
-        app: isamdsc
+        app: ${APP_NAME}-dsc1
     strategy:
       rollingUpdate:
         maxSurge: 1
@@ -156,9 +121,9 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app: isamdsc
+          app: ${APP_NAME}-dsc1
       spec:
-        serviceAccountName: isam
+        serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
@@ -169,21 +134,21 @@ objects:
           - name: INSTANCE
             value: "1"
           - name: CONTAINER_TIMEZONE
-            value: Europe/London
+            value: ${TIMEZONE}
           - name: AUTO_RELOAD_FREQUENCY
             value: "5"
           - name: CONFIG_SERVICE_URL
-            value: https://isamconfig:9443/shared_volume
+            value: https://${CONFIG_SERVICE}:9443/shared_volume
           - name: CONFIG_SERVICE_USER_NAME
             value: cfgsvc
           - name: CONFIG_SERVICE_USER_PWD
             valueFrom:
               secretKeyRef:
                 key: cfgsvcpw
-                name: configreader
-          image: docker.io/store/ibmcorp/isam:9.0.7.0
+                name: ${CFGSVC_SECRET}
+          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
-          name: isamdsc
+          name: ${APP_NAME}-dsc1
           ports:
           - containerPort: 443
             protocol: TCP
@@ -195,27 +160,27 @@ objects:
           livenessProbe:
             exec:
               command:
-              - /sbin/health_check.sh 
+              - /sbin/health_check.sh
               - livenessProbe
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
             periodSeconds: 10
           volumeMounts:
           - mountPath: /var/application.logs
-            name: isamdsc-logs
+            name: ${APP_NAME}-dsc1-logs
         dnsPolicy: ClusterFirst
         imagePullSecrets:
-        - name: dockerlogin
+        - name: ${PULL_SECRET}
         restartPolicy: Always
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
         volumes:
-        - name: isamdsc-logs
+        - name: ${APP_NAME}-dsc1-logs
           emptyDir: {}
 - apiVersion: apps/v1
   kind: Deployment
@@ -225,15 +190,15 @@ objects:
     creationTimestamp: null
     generation: 1
     labels:
-      app: isamruntime
-    name: isamruntime
+      app: ${APP_NAME}
+    name: ${APP_NAME}-dsc2
   spec:
     progressDeadlineSeconds: 600
-    replicas: 1
+    replicas: 0
     revisionHistoryLimit: 10
     selector:
       matchLabels:
-        app: isamruntime
+        app: ${APP_NAME}-dsc2
     strategy:
       rollingUpdate:
         maxSurge: 1
@@ -243,9 +208,270 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app: isamruntime
+          app: ${APP_NAME}-dsc2
       spec:
-        serviceAccountName: isam
+        serviceAccountName: ${SERVICE_ACCOUNT}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser:    6000
+        containers:
+        - env:
+          - name: SERVICE
+            value: dsc
+          - name: INSTANCE
+            value: "2"
+          - name: CONTAINER_TIMEZONE
+            value: ${TIMEZONE}
+          - name: AUTO_RELOAD_FREQUENCY
+            value: "5"
+          - name: CONFIG_SERVICE_URL
+            value: https://${CONFIG_SERVICE}:9443/shared_volume
+          - name: CONFIG_SERVICE_USER_NAME
+            value: cfgsvc
+          - name: CONFIG_SERVICE_USER_PWD
+            valueFrom:
+              secretKeyRef:
+                key: cfgsvcpw
+                name: ${CFGSVC_SECRET}
+          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          imagePullPolicy: IfNotPresent
+          name: ${APP_NAME}-dsc2
+          ports:
+          - containerPort: 443
+            protocol: TCP
+          - containerPort: 444
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          livenessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+              - livenessProbe
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          volumeMounts:
+          - mountPath: /var/application.logs
+            name: ${APP_NAME}-dsc2-logs
+        dnsPolicy: ClusterFirst
+        imagePullSecrets:
+        - name: ${PULL_SECRET}
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: ${APP_NAME}-dsc2-logs
+          emptyDir: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}-dsc3
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 0
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: ${APP_NAME}-dsc3
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ${APP_NAME}-dsc3
+      spec:
+        serviceAccountName: ${SERVICE_ACCOUNT}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser:    6000
+        containers:
+        - env:
+          - name: SERVICE
+            value: dsc
+          - name: INSTANCE
+            value: "3"
+          - name: CONTAINER_TIMEZONE
+            value: ${TIMEZONE}
+          - name: AUTO_RELOAD_FREQUENCY
+            value: "5"
+          - name: CONFIG_SERVICE_URL
+            value: https://${CONFIG_SERVICE}:9443/shared_volume
+          - name: CONFIG_SERVICE_USER_NAME
+            value: cfgsvc
+          - name: CONFIG_SERVICE_USER_PWD
+            valueFrom:
+              secretKeyRef:
+                key: cfgsvcpw
+                name: ${CFGSVC_SECRET}
+          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          imagePullPolicy: IfNotPresent
+          name: ${APP_NAME}-dsc3
+          ports:
+          - containerPort: 443
+            protocol: TCP
+          - containerPort: 444
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          livenessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+              - livenessProbe
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          volumeMounts:
+          - mountPath: /var/application.logs
+            name: ${APP_NAME}-dsc3-logs
+        dnsPolicy: ClusterFirst
+        imagePullSecrets:
+        - name: ${PULL_SECRET}
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: ${APP_NAME}-dsc3-logs
+          emptyDir: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}-dsc4
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 0
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: ${APP_NAME}-dsc4
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ${APP_NAME}-dsc4
+      spec:
+        serviceAccountName: ${SERVICE_ACCOUNT}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser:    6000
+        containers:
+        - env:
+          - name: SERVICE
+            value: dsc
+          - name: INSTANCE
+            value: "4"
+          - name: CONTAINER_TIMEZONE
+            value: ${TIMEZONE}
+          - name: AUTO_RELOAD_FREQUENCY
+            value: "5"
+          - name: CONFIG_SERVICE_URL
+            value: https://${CONFIG_SERVICE}:9443/shared_volume
+          - name: CONFIG_SERVICE_USER_NAME
+            value: cfgsvc
+          - name: CONFIG_SERVICE_USER_PWD
+            valueFrom:
+              secretKeyRef:
+                key: cfgsvcpw
+                name: ${CFGSVC_SECRET}
+          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          imagePullPolicy: IfNotPresent
+          name: ${APP_NAME}-dsc4
+          ports:
+          - containerPort: 443
+            protocol: TCP
+          - containerPort: 444
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          livenessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+              - livenessProbe
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          volumeMounts:
+          - mountPath: /var/application.logs
+            name: ${APP_NAME}-dsc4-logs
+        dnsPolicy: ClusterFirst
+        imagePullSecrets:
+        - name: ${PULL_SECRET}
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: ${APP_NAME}-dsc4-logs
+          emptyDir: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}-runtime
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: ${APP_NAME}-runtime
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ${APP_NAME}-runtime
+      spec:
+        serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
@@ -254,21 +480,21 @@ objects:
           - name: SERVICE
             value: runtime
           - name: CONTAINER_TIMEZONE
-            value: Europe/London
+            value: ${TIMEZONE}
           - name: AUTO_RELOAD_FREQUENCY
             value: "5"
           - name: CONFIG_SERVICE_URL
-            value: https://isamconfig:9443/shared_volume
+            value: https://${CONFIG_SERVICE}:9443/shared_volume
           - name: CONFIG_SERVICE_USER_NAME
             value: cfgsvc
           - name: CONFIG_SERVICE_USER_PWD
             valueFrom:
               secretKeyRef:
                 key: cfgsvcpw
-                name: configreader
-          image: docker.io/store/ibmcorp/isam:9.0.7.0
+                name: ${CFGSVC_SECRET}
+          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
-          name: isamruntime
+          name: ${APP_NAME}-runtime
           ports:
           - containerPort: 443
             protocol: TCP
@@ -278,287 +504,44 @@ objects:
           livenessProbe:
             exec:
               command:
-              - /sbin/health_check.sh 
+              - /sbin/health_check.sh
               - livenessProbe
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
-            initialDelaySeconds: 10
+            initialDelaySeconds: 120
             periodSeconds: 10
           volumeMounts:
           - mountPath: /var/application.logs
-            name: isamruntime-logs
+            name: ${APP_NAME}-runtime-logs
         dnsPolicy: ClusterFirst
         imagePullSecrets:
-        - name: dockerlogin
+        - name: ${PULL_SECRET}
         restartPolicy: Always
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
         volumes:
-        - name: isamruntime-logs
+        - name: ${APP_NAME}-runtime-logs
           emptyDir: {}
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    annotations:
-      deployment.kubernetes.io/revision: "1"
-    creationTimestamp: null
-    generation: 1
-    labels:
-      app: isamwrprp1
-    name: isamwrprp1
-  spec:
-    progressDeadlineSeconds: 600
-    replicas: 1
-    revisionHistoryLimit: 10
-    selector:
-      matchLabels:
-        app: isamwrprp1
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          app: isamwrprp1
-      spec:
-        serviceAccountName: isam
-        securityContext:
-          runAsNonRoot: true
-          runAsUser:    6000
-        containers:
-        - env:
-          - name: SERVICE
-            value: webseal
-          - name: INSTANCE
-            value: rp1
-          - name: CONTAINER_TIMEZONE
-            value: Europe/London
-          - name: AUTO_RELOAD_FREQUENCY
-            value: "5"
-          - name: CONFIG_SERVICE_URL
-            value: https://isamconfig:9443/shared_volume
-          - name: CONFIG_SERVICE_USER_NAME
-            value: cfgsvc
-          - name: CONFIG_SERVICE_USER_PWD
-            valueFrom:
-              secretKeyRef:
-                key: cfgsvcpw
-                name: configreader
-          image: docker.io/store/ibmcorp/isam:9.0.7.0
-          imagePullPolicy: IfNotPresent
-          name: isamwrprp1
-          ports:
-          - containerPort: 443
-            protocol: TCP
-          resources: {}
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          livenessProbe:
-            exec:
-              command:
-              - /sbin/health_check.sh 
-              - livenessProbe
-            initialDelaySeconds: 10
-            periodSeconds: 10
-          readinessProbe:
-            exec:
-              command:
-              - /sbin/health_check.sh
-            initialDelaySeconds: 10
-            periodSeconds: 10
-          volumeMounts:
-          - mountPath: /var/application.logs
-            name: isamwrprp1-logs
-        dnsPolicy: ClusterFirst
-        imagePullSecrets:
-        - name: dockerlogin
-        restartPolicy: Always
-        schedulerName: default-scheduler
-        terminationGracePeriodSeconds: 30
-        volumes:
-        - name: isamwrprp1-logs
-          emptyDir: {}
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    annotations:
-      deployment.kubernetes.io/revision: "2"
-    creationTimestamp: null
-    generation: 3
-    labels:
-      app: openldap
-    name: openldap
-  spec:
-    progressDeadlineSeconds: 600
-    replicas: 1
-    revisionHistoryLimit: 10
-    selector:
-      matchLabels:
-        app: openldap
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          app: openldap
-      spec:
-        serviceAccountName: openldap
-        containers:
-        - args:
-          - --copy-service
-          env:
-          - name: LDAP_DOMAIN
-            value: ibm.com
-          - name: LDAP_ADMIN_PASSWORD
-            value: Passw0rd
-          - name: LDAP_CONFIG_PASSWORD
-            value: Passw0rd
-          image: docker.io/ibmcom/isam-openldap:9.0.7.0
-          imagePullPolicy: IfNotPresent
-          name: openldap
-          ports:
-          - containerPort: 636
-            protocol: TCP
-          resources: {}
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          volumeMounts:
-          - mountPath: /var/lib/ldap
-            name: ldaplib
-          - mountPath: /etc/ldap/slapd.d
-            name: ldapslapd
-          - mountPath: /var/lib/ldap.secAuthority
-            name: ldapsecauthority
-          - mountPath: /container/service/slapd/assets/certs
-            name: openldap-keys
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        schedulerName: default-scheduler
-        terminationGracePeriodSeconds: 30
-        volumes:
-        - name: ldapslapd
-          persistentVolumeClaim:
-            claimName: ldapslapd
-        - name: ldaplib
-          persistentVolumeClaim:
-            claimName: ldaplib
-        - name: ldapsecauthority
-          persistentVolumeClaim:
-            claimName: ldapsecauthority
-        - name: openldap-keys
-          secret:
-            defaultMode: 420
-            secretName: openldap-keys
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    annotations:
-      deployment.kubernetes.io/revision: "1"
-    creationTimestamp: null
-    generation: 1
-    labels:
-      app: postgresql
-    name: postgresql
-  spec:
-    progressDeadlineSeconds: 600
-    replicas: 1
-    revisionHistoryLimit: 10
-    selector:
-      matchLabels:
-        app: postgresql
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          app: postgresql
-      spec:
-        serviceAccountName: isam
-        securityContext:
-          runAsNonRoot: true
-          runAsUser:    70
-        containers:
-        - env:
-          - name: POSTGRES_USER
-            value: postgres
-          - name: POSTGRES_PASSWORD
-            value: Passw0rd
-          - name: POSTGRES_DB
-            value: isam
-          - name: POSTGRES_SSL_KEYDB
-            value: /var/local/server.pem
-          image: docker.io/ibmcom/isam-postgresql:9.0.7.0
-          imagePullPolicy: IfNotPresent
-          name: postgresql
-          ports:
-          - containerPort: 5432
-            protocol: TCP
-          resources: {}
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          volumeMounts:
-          - mountPath: /var/lib/postgresql/data
-            name: postgresqldata
-          - mountPath: /var/local
-            name: postgresql-keys
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        schedulerName: default-scheduler
-        terminationGracePeriodSeconds: 30
-        volumes:
-        - name: postgresqldata
-          persistentVolumeClaim:
-            claimName: postgresqldata
-        - name: postgresql-keys
-          secret:
-            defaultMode: 420
-            secretName: postgresql-keys
-- apiVersion: v1
-  kind: Route
-  metadata:
-    creationTimestamp: null
-    name: isamwrprp1
-  spec:
-    host: www.iamlab.ibm.com
-    port:
-      targetPort: isamwrprp1
-    tls:
-      insecureEdgeTerminationPolicy: Redirect
-      termination: passthrough
-    to:
-      kind: Service
-      name: isamwrprp1
-      weight: 100
-    wildcardPolicy: None
 - apiVersion: v1
   kind: Service
   metadata:
     creationTimestamp: null
-    name: isamconfig
+    name: ${CONFIG_SERVICE}
+    labels:
+      app: ${APP_NAME}
   spec:
     externalTrafficPolicy: Cluster
     ports:
-    - name: isamconfig
+    - name: ${CONFIG_SERVICE}
       port: 9443
       protocol: TCP
       targetPort: 9443
     selector:
-      app: isamconfig
+      app: ${APP_NAME}-config
     sessionAffinity: None
     type: NodePort
   status:
@@ -567,19 +550,21 @@ objects:
   kind: Service
   metadata:
     creationTimestamp: null
-    name: isamdsc
+    name: ${DSC_SERVICE}
+    labels:
+      app: ${APP_NAME}
   spec:
     ports:
-    - name: isamdsc-svc
+    - name: ${DSC_SERVICE}-svc
       port: 443
       protocol: TCP
       targetPort: 443
-    - name: isamdsc-rep
+    - name: ${DSC_SERVICE}-rep
       port: 444
       protocol: TCP
       targetPort: 444
     selector:
-      app: isamdsc
+      app: ${APP_NAME}-dsc1
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -588,76 +573,118 @@ objects:
   kind: Service
   metadata:
     creationTimestamp: null
-    name: isamruntime
-  spec:
-    ports:
-    - name: isamruntime
-      port: 443
-      protocol: TCP
-      targetPort: 443
-    selector:
-      app: isamruntime
-    sessionAffinity: None
-    type: ClusterIP
-  status:
-    loadBalancer: {}
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    name: isamwrprp1
-  spec:
-    externalTrafficPolicy: Cluster
-    ports:
-    - name: isamwrprp1
-      port: 443
-      protocol: TCP
-      targetPort: 443
-    selector:
-      app: isamwrprp1
-    sessionAffinity: ClientIP
-    sessionAffinityConfig:
-      clientIP:
-        timeoutSeconds: 10800
-    type: NodePort
-  status:
-    loadBalancer: {}
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
+    name: ${DSC_SERVICE}2
     labels:
-      app: openldap
-    name: openldap
+      app: ${APP_NAME}
   spec:
-    externalTrafficPolicy: Cluster
     ports:
-    - name: ldaps
-      port: 636
+    - name: ${DSC_SERVICE}2-svc
+      port: 443
       protocol: TCP
-      targetPort: 636
+      targetPort: 443
+    - name: ${DSC_SERVICE}2-rep
+      port: 444
+      protocol: TCP
+      targetPort: 444
     selector:
-      app: openldap
+      app: ${APP_NAME}-dsc2
     sessionAffinity: None
-    type: NodePort
+    type: ClusterIP
   status:
     loadBalancer: {}
 - apiVersion: v1
   kind: Service
   metadata:
     creationTimestamp: null
-    name: postgresql
+    name: ${DSC_SERVICE}3
+    labels:
+      app: ${APP_NAME}
   spec:
     ports:
-    - name: postgresql
-      port: 5432
+    - name: ${DSC_SERVICE}3-svc
+      port: 443
       protocol: TCP
-      targetPort: 5432
+      targetPort: 443
+    - name: ${DSC_SERVICE}3-rep
+      port: 444
+      protocol: TCP
+      targetPort: 444
     selector:
-      app: postgresql
+      app: ${APP_NAME}-dsc3
     sessionAffinity: None
     type: ClusterIP
   status:
     loadBalancer: {}
-
-
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: ${DSC_SERVICE}4
+    labels:
+      app: ${APP_NAME}
+  spec:
+    ports:
+    - name: ${DSC_SERVICE}4-svc
+      port: 443
+      protocol: TCP
+      targetPort: 443
+    - name: ${DSC_SERVICE}4-rep
+      port: 444
+      protocol: TCP
+      targetPort: 444
+    selector:
+      app: ${APP_NAME}-dsc4
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: ${RUNTIME_SERVICE}
+    labels:
+      app: ${APP_NAME}
+  spec:
+    ports:
+    - name: ${RUNTIME_SERVICE}
+      port: 443
+      protocol: TCP
+      targetPort: 443
+    selector:
+      app: ${APP_NAME}-runtime
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+parameters:
+  - description: Application Name
+    name: APP_NAME
+    value: isam
+  - description: ISAM Version to be deployed
+    name: ISAM_VERSION
+    value: 9.0.7.0
+  - description: Config Service Name
+    name: CONFIG_SERVICE
+    value: isamconfig
+  - description: DSC Service Name
+    name: DSC_SERVICE
+    value: isamdsc
+  - description: Runtime Service Name
+    name: RUNTIME_SERVICE
+    value: isamruntime
+  - description: Secret for Administrator UID/PW
+    name: ADMIN_SECRET
+    value: samadmin
+  - description: Secret for Config Service Password
+    name: CFGSVC_SECRET
+    value: configreader
+  - description: Secret for Image Pull
+    name: PULL_SECRET
+    value: dockerlogin
+  - description: Timezone for container
+    name: TIMEZONE
+    value: Europe/London
+  - description: Service Account
+    name: SERVICE_ACCOUNT
+    value: isam

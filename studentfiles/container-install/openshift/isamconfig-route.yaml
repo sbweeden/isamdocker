@@ -3,6 +3,8 @@ kind: Route
 metadata:
   creationTimestamp: null
   name: isamconfig
+  labels:
+    app: isam
 spec:
   host: isam.iamlab.ibm.com
   port:

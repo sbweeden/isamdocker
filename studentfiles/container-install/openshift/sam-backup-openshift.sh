@@ -8,7 +8,7 @@ TMPDIR=/tmp/backup-$RANDOM$RANDOM
 mkdir $TMPDIR
 
 # Get docker container ID for isamconfig container
-ISAMCONFIG="$(oc get --no-headers=true pods -l app=isamconfig -o custom-columns=:metadata.name)"
+ISAMCONFIG="$(oc get --no-headers=true pods -l app=isam-config -o custom-columns=:metadata.name)"
 
 # Copy the current snapshots from isamconfig container
 SNAPSHOTS=`oc exec ${ISAMCONFIG} ls /var/shared/snapshots`
