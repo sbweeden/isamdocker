@@ -13,6 +13,7 @@ objects:
     name: ${APP_NAME}-config
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-config
   spec:
     accessModes:
     - ReadWriteOnce
@@ -28,6 +29,7 @@ objects:
     generation: 1
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-config
     name: ${APP_NAME}-config
   spec:
     progressDeadlineSeconds: 600
@@ -35,7 +37,7 @@ objects:
     revisionHistoryLimit: 10
     selector:
       matchLabels:
-        app: ${APP_NAME}-config
+        isamapp: ${APP_NAME}-config
     strategy:
       rollingUpdate:
         maxSurge: 1
@@ -45,7 +47,8 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}-config
+          app: ${APP_NAME}
+          isamapp: ${APP_NAME}-config
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
@@ -104,6 +107,7 @@ objects:
     generation: 1
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-dsc1
     name: ${APP_NAME}-dsc1
   spec:
     progressDeadlineSeconds: 600
@@ -111,7 +115,7 @@ objects:
     revisionHistoryLimit: 10
     selector:
       matchLabels:
-        app: ${APP_NAME}-dsc1
+        isamapp: ${APP_NAME}-dsc1
     strategy:
       rollingUpdate:
         maxSurge: 1
@@ -121,12 +125,24 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}-dsc1
+          app: ${APP_NAME}
+          isamapp: ${APP_NAME}-dsc1
+          isamaffinity: ${APP_NAME}-dsc
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: isamaffinity
+                  operator: In
+                  values:
+                  - ${APP_NAME}-dsc
+              topologyKey: kubernetes.io/hostname
         containers:
         - env:
           - name: SERVICE
@@ -191,6 +207,7 @@ objects:
     generation: 1
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-dsc2
     name: ${APP_NAME}-dsc2
   spec:
     progressDeadlineSeconds: 600
@@ -198,7 +215,7 @@ objects:
     revisionHistoryLimit: 10
     selector:
       matchLabels:
-        app: ${APP_NAME}-dsc2
+        isamapp: ${APP_NAME}-dsc2
     strategy:
       rollingUpdate:
         maxSurge: 1
@@ -208,12 +225,24 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}-dsc2
+          app: ${APP_NAME}
+          isamapp: ${APP_NAME}-dsc2
+          isamaffinity: ${APP_NAME}-dsc
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: isamaffinity
+                  operator: In
+                  values:
+                  - ${APP_NAME}-dsc
+              topologyKey: kubernetes.io/hostname
         containers:
         - env:
           - name: SERVICE
@@ -278,6 +307,7 @@ objects:
     generation: 1
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-dsc3
     name: ${APP_NAME}-dsc3
   spec:
     progressDeadlineSeconds: 600
@@ -285,7 +315,7 @@ objects:
     revisionHistoryLimit: 10
     selector:
       matchLabels:
-        app: ${APP_NAME}-dsc3
+        isamapp: ${APP_NAME}-dsc3
     strategy:
       rollingUpdate:
         maxSurge: 1
@@ -295,12 +325,24 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}-dsc3
+          app: ${APP_NAME}
+          isamapp: ${APP_NAME}-dsc3
+          isamaffinity: ${APP_NAME}-dsc
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: isamaffinity
+                  operator: In
+                  values:
+                  - ${APP_NAME}-dsc
+              topologyKey: kubernetes.io/hostname
         containers:
         - env:
           - name: SERVICE
@@ -365,6 +407,7 @@ objects:
     generation: 1
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-dsc4
     name: ${APP_NAME}-dsc4
   spec:
     progressDeadlineSeconds: 600
@@ -372,7 +415,7 @@ objects:
     revisionHistoryLimit: 10
     selector:
       matchLabels:
-        app: ${APP_NAME}-dsc4
+        isamapp: ${APP_NAME}-dsc4
     strategy:
       rollingUpdate:
         maxSurge: 1
@@ -382,12 +425,24 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}-dsc4
+          app: ${APP_NAME}
+          isamapp: ${APP_NAME}-dsc4
+          isamaffinity: ${APP_NAME}-dsc
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: isamaffinity
+                  operator: In
+                  values:
+                  - ${APP_NAME}-dsc
+              topologyKey: kubernetes.io/hostname
         containers:
         - env:
           - name: SERVICE
@@ -452,6 +507,7 @@ objects:
     generation: 1
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-runtime
     name: ${APP_NAME}-runtime
   spec:
     progressDeadlineSeconds: 600
@@ -459,7 +515,7 @@ objects:
     revisionHistoryLimit: 10
     selector:
       matchLabels:
-        app: ${APP_NAME}-runtime
+        isamapp: ${APP_NAME}-runtime
     strategy:
       rollingUpdate:
         maxSurge: 1
@@ -469,12 +525,25 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}-runtime
+          app: ${APP_NAME}
+          isamapp: ${APP_NAME}-runtime
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
           runAsNonRoot: true
           runAsUser:    6000
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: isamapp
+                    operator: In
+                    values:
+                    - ${APP_NAME}-runtime
+                topologyKey: kubernetes.io/hostname
         containers:
         - env:
           - name: SERVICE
@@ -533,6 +602,7 @@ objects:
     name: ${CONFIG_SERVICE}
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-config
   spec:
     externalTrafficPolicy: Cluster
     ports:
@@ -541,7 +611,7 @@ objects:
       protocol: TCP
       targetPort: 9443
     selector:
-      app: ${APP_NAME}-config
+      isamapp: ${APP_NAME}-config
     sessionAffinity: None
     type: NodePort
   status:
@@ -553,6 +623,7 @@ objects:
     name: ${DSC_SERVICE}
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-dsc1
   spec:
     ports:
     - name: ${DSC_SERVICE}-svc
@@ -564,7 +635,7 @@ objects:
       protocol: TCP
       targetPort: 444
     selector:
-      app: ${APP_NAME}-dsc1
+      isamapp: ${APP_NAME}-dsc1
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -576,6 +647,7 @@ objects:
     name: ${DSC_SERVICE}2
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-dsc2
   spec:
     ports:
     - name: ${DSC_SERVICE}2-svc
@@ -587,7 +659,7 @@ objects:
       protocol: TCP
       targetPort: 444
     selector:
-      app: ${APP_NAME}-dsc2
+      isamapp: ${APP_NAME}-dsc2
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -599,6 +671,7 @@ objects:
     name: ${DSC_SERVICE}3
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-dsc3
   spec:
     ports:
     - name: ${DSC_SERVICE}3-svc
@@ -610,7 +683,7 @@ objects:
       protocol: TCP
       targetPort: 444
     selector:
-      app: ${APP_NAME}-dsc3
+      isamapp: ${APP_NAME}-dsc3
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -622,6 +695,7 @@ objects:
     name: ${DSC_SERVICE}4
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-dsc4
   spec:
     ports:
     - name: ${DSC_SERVICE}4-svc
@@ -633,7 +707,7 @@ objects:
       protocol: TCP
       targetPort: 444
     selector:
-      app: ${APP_NAME}-dsc4
+      isamapp: ${APP_NAME}-dsc4
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -645,6 +719,7 @@ objects:
     name: ${RUNTIME_SERVICE}
     labels:
       app: ${APP_NAME}
+      isamapp: ${APP_NAME}-runtime
   spec:
     ports:
     - name: ${RUNTIME_SERVICE}
@@ -652,7 +727,7 @@ objects:
       protocol: TCP
       targetPort: 443
     selector:
-      app: ${APP_NAME}-runtime
+      isamapp: ${APP_NAME}-runtime
     sessionAffinity: None
     type: ClusterIP
   status:
