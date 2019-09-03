@@ -1,5 +1,8 @@
 #!/bin/bash
 
+ADMINPW="Passw0rd"
+CFGSVCPW="Passw0rd"
+
 # Get directory for this script
 RUNDIR="`dirname \"$0\"`"         # relative
 RUNDIR="`( cd \"$RUNDIR\" && pwd )`"  # absolutized and normalized
@@ -30,14 +33,17 @@ oc create secret generic postgresql-keys --from-file "$KEY_DIR/postgresql/server
 echo "Deleting samadmin Secret"
 oc delete secret samadmin > /dev/null 2>&1
 echo "Creating samadmin Secret"
+ADMINPWB64=`echo -n ${ADMINPW} | base64`
 oc create secret generic samadmin
-oc patch secret/samadmin -p '{"data":{"adminpw":"UGFzc3cwcmQ="}}'
-
+mycommand=`echo -n oc patch secret/samadmin -p \'{\"data\":{\"adminpw\":\"${ADMINPWB64}\"}}\'`
+eval $mycommand
 echo "Deleting configreader Secret"
 oc delete secret configreader > /dev/null 2>&1
 echo "Creating configreader Secret"
+CFGSVCPWB64=`echo -n ${CFGSVCPW} | base64`
 oc create secret generic configreader
-oc patch secret/configreader -p '{"data":{"cfgsvcpw":"UGFzc3cwcmQ="}}'
+mycommand=`echo -n oc patch secret/configreader -p \'{\"data\":{\"cfgsvcpw\":\"${CFGSVCPWB64}\"}}\'`
+eval $mycommand
 echo "Done."
 
 
