@@ -108,11 +108,10 @@ Finally, run `helm-install.sh` to run the helm command to create an Access Manag
 
 The output from this command includes the information you will need to connect to the LMI and Reverse Proxy services.
 
-IMPORTANT: The Helm Charts shown here are modified from the charts provided with Access Manager.  The following changes have been made:
+IMPORTANT: The Helm Charts shown here are slightly modified from the official charts provided with Access Manager.  The following changes apply:
 - Ability to include an OpenLDAP deployment in the release
-- Ability to specify pre-created secrets for key materials for OpenLDAP and PostgreSQL deployments
-- Ability to specify the names of Reverse Proxy instances
-- Use of ReadWriteOnce PVCs
+- Ability to run with reduced mininmum resources
+- Different service names and defaults to more closely align with other deployments methods described here
 
 If you want to be able to restore a configuration archive created in other environments described here, you will need to allow the names used in the other deployments to resolve here.  If your Kubernetes cluster uses CoreDNS, you can use command `kubectl create -f update-coredns.yaml` to add suitable rewrite rules.  Otherwise you will need to manually modify the configuration after deployment to replace hostnames wherever they appear.
 
