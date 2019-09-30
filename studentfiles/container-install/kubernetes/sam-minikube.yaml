@@ -55,13 +55,16 @@ spec:
     requests:
       storage: 50M
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: openldap
   labels:
     app: openldap
 spec:
+  selector:
+    matchLabels:
+      app: openldap
   replicas: 1
   template:
     metadata:
@@ -125,13 +128,16 @@ spec:
   selector:
     app: openldap
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgresql
   labels:
     app: postgresql
 spec:
+  selector:
+    matchLabels:
+      app: postgresql
   replicas: 1
   template:
     metadata:
@@ -187,13 +193,16 @@ spec:
   selector:
     app: postgresql
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: isamconfig
   labels:
     app: isamconfig
 spec:
+  selector:
+    matchLabels:
+      app: isamconfig
   replicas: 1
   template:
     metadata:
@@ -258,13 +267,16 @@ spec:
   selector:
     app: isamconfig
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: isamwrprp1
   labels:
     app: isamwrprp1
 spec:
+  selector:
+    matchLabels:
+      app: isamwrprp1
   replicas: 1
   template:
     metadata:
@@ -339,13 +351,16 @@ spec:
   selector:
     app: isamwrprp1
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: isamruntime
   labels:
     app: isamruntime
 spec:
+  selector:
+    matchLabels:
+      app: isamruntime
   replicas: 1
   template:
     metadata:
@@ -414,13 +429,16 @@ spec:
   selector:
     app: isamruntime
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: isamdsc
   labels:
     app: isamdsc
 spec:
+  selector:
+    matchLabels:
+      app: isamdsc
   replicas: 1
   template:
     metadata:
@@ -495,7 +513,7 @@ spec:
   selector:
     app: isamdsc
 ---
- apiVersion: extensions/v1beta1
+ apiVersion: networking.k8s.io/v1beta1
  kind: Ingress
  metadata:
    name: isamwrprp1
