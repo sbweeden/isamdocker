@@ -30,10 +30,7 @@ services:
     depends_on:
       - openldap
       - postgresql
-    cap_add:
-      - SYS_PTRACE
-      - SYS_RESOURCE
- 
+
   isamwrprp1:
     image: store/ibmcorp/isam:${ISAM_VERSION}
     hostname: isamwrprp1
@@ -55,9 +52,6 @@ services:
       - ${WEB1_IP}:443:443
     depends_on:
       - openldap
-    cap_add:
-      - SYS_PTRACE
-      - SYS_RESOURCE
 
   isamruntime:
     image: store/ibmcorp/isam:${ISAM_VERSION}
@@ -74,9 +68,6 @@ services:
     depends_on:
       - openldap
       - postgresql
-    cap_add:
-      - SYS_PTRACE
-      - SYS_RESOURCE
 
   isamdsc:
     image: store/ibmcorp/isam:${ISAM_VERSION}
@@ -91,9 +82,6 @@ services:
       - AUTO_RELOAD_FREQUENCY=5
     volumes:
       - isamconfig:/var/shared
-    cap_add:
-      - SYS_PTRACE
-      - SYS_RESOURCE
 
 #
 # Service Containers
@@ -134,4 +122,3 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ${HOME}/dockershare/composekeys/postgresql:/var/local
-
