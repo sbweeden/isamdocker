@@ -51,6 +51,7 @@ objects:
         securityContext:
           runAsNonRoot: true
           runAsUser:    70
+          fsGroup:      70
         containers:
         - env:
           - name: POSTGRES_USER
