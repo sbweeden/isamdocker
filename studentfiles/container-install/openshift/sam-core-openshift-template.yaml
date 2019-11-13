@@ -65,7 +65,7 @@ objects:
               secretKeyRef:
                 key: adminpw
                 name: ${ADMIN_SECRET}
-          image: docker.io/store/ibmcorp/isam:9.0.7.0
+          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-config
           resources: {}
@@ -180,12 +180,14 @@ objects:
               - livenessProbe
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
             initialDelaySeconds: 60
             periodSeconds: 10
+            timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-dsc1-logs
@@ -280,12 +282,14 @@ objects:
               - livenessProbe
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
             initialDelaySeconds: 60
             periodSeconds: 10
+            timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-dsc2-logs
@@ -380,12 +384,14 @@ objects:
               - livenessProbe
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
             initialDelaySeconds: 60
             periodSeconds: 10
+            timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-dsc3-logs
@@ -480,12 +486,14 @@ objects:
               - livenessProbe
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
             initialDelaySeconds: 60
             periodSeconds: 10
+            timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-dsc4-logs
@@ -577,12 +585,14 @@ objects:
               - livenessProbe
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
             initialDelaySeconds: 120
             periodSeconds: 10
+            timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-runtime-logs

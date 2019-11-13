@@ -326,12 +326,14 @@ spec:
               - livenessProbe
             initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
             initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 2
       imagePullSecrets:
         - name: dockerlogin
 ---
@@ -408,12 +410,14 @@ spec:
               - livenessProbe
             initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
             initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 2
       imagePullSecrets:
         - name: dockerlogin
 ---
@@ -489,12 +493,14 @@ spec:
               - livenessProbe
             initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
             initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 2
       imagePullSecrets:
         - name: dockerlogin
 ---

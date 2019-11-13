@@ -86,12 +86,14 @@ objects:
               - livenessProbe
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
             initialDelaySeconds: 60
             periodSeconds: 10
+            timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-logs
