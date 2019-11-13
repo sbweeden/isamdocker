@@ -140,7 +140,21 @@ Next, run `./create-docker-store-secret.sh` command and provide your Docker cred
 
 Next, run `./create-secrets.sh` command to create the secrets required for the environment.
 
-Finally, use these commands to process the ISAM Template and use the output to deploy:
+You can use the provided template files in two ways
+
+## Load templates and then use in console
+Load the templates using the following commands:
+
+```
+oc create -f sam-openldap-template.yaml
+oc create -f sam-postgresql-template.yaml
+oc create -f sam-core-openshift-template.yaml
+oc create -f sam-rp-openshift-template.yaml
+```
+Then open the OpenShift console (e.g. https://localhost:8443), login as your standard user, locate the templates in the Catalog (inside your project), and click to deploy.  You can update the default deploy parameters during this process.
+
+## Deploy directly from templates on the command line
+Use these commands to process the ISAM templates and use the output to deploy.  Using this method will use the default deploy parameters in the template.  You can edit the template to change them or override on the command-line.
 
 ```
 oc process -f sam-openldap-template.yaml | oc create -f -
@@ -149,10 +163,9 @@ oc process -f sam-core-openshift-template.yaml | oc create -f -
 oc process -f sam-rp-openshift-template.yaml | oc create -f -
 ```
 
-Alternatively, you could import the templates into the OpenShift Console and deploy them from there.
-
+# Access the LMI
 Once ISAM is deployed, you can run the `./lmi-access.sh` script to start a port-forward session for access to the LMI.
-With this running, you can access LMI using at https://localhost:9443
+With this running, you can access LMI using at https://localhost:9443.  If this isn't stable, you can also create a route using the provided file (but this will open your LMI to the world).
 
 OpenShift includes a web proxy which can route traffic to the ISAM Reverse Proxy.  You will need to determine the IP address where this is listening and then point www.iamlab.ibm.com to it in your /etc/hosts file.
 
