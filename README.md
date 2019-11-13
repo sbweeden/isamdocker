@@ -163,7 +163,6 @@ oc process -f sam-core-openshift-template.yaml | oc create -f -
 oc process -f sam-rp-openshift-template.yaml | oc create -f -
 ```
 
-# Access the LMI
 Once ISAM is deployed, you can run the `./lmi-access.sh` script to start a port-forward session for access to the LMI.
 With this running, you can access LMI using at https://localhost:9443.  If this isn't stable, you can also create a route using the provided file (but this will open your LMI to the world).
 
