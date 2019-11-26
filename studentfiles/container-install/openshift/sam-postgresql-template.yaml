@@ -62,7 +62,7 @@ objects:
             value: ${DB_NAME}
           - name: POSTGRES_SSL_KEYDB
             value: /var/local/server.pem
-          image: docker.io/ibmcom/isam-postgresql:${ISAM_VERSION}
+          image: docker.io/ibmcom/isam-postgresql:${DB_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}
           ports:
@@ -112,7 +112,7 @@ parameters:
     name: APP_NAME
     value: postgresql
   - description: ISAM Version to be deployed
-    name: ISAM_VERSION
+    name: DB_VERSION
     value: 9.0.7.0
   - description: Administrator Username
     name: ADMIN_ID

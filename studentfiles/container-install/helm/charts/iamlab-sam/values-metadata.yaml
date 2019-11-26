@@ -20,7 +20,7 @@ global:
       __metadata:
         name: "Repository"
         label: "Docker repository"
-        description: "The repository of the image to pull."
+        description: "The repository of the ISAM image to pull.  This should include tag."
         type: "string"
         immutable: false
         required: true
@@ -28,7 +28,7 @@ global:
       __metadata:
         name: "DB Repository"
         label: "Docker database repository"
-        description: "The repository of the postgresql image to pull."
+        description: "The repository of the postgresql image to pull. This should include tag."
         type: "string"
         immutable: false
         required: true
@@ -36,15 +36,7 @@ global:
       __metadata:
         name: "LDAP Repository"
         label: "Docker LDAP repository"
-        description: "The repository of the openldap image to pull."
-        type: "string"
-        immutable: false
-        required: true
-    tag:
-      __metadata:
-        name: "Tag"
-        label: "Docker tag"
-        description: "The tag of the image to pull.  This should correspond to the version of ISAM which is being installed (e.g. 9.0.7.0)"
+        description: "The repository of the openldap image to pull. This should include tag."
         type: "string"
         immutable: false
         required: true

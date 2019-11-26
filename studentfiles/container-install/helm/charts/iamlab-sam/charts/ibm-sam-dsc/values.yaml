@@ -9,8 +9,7 @@
 global:
   # Common image variables
   image:
-    repository: store/ibmcorp/isam
-    tag:        9.0.7.0
+    repository: store/ibmcorp/isam:9.0.7.0_IF1
     pullPolicy: IfNotPresent
 
   # Image credentials.

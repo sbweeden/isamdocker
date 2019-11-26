@@ -1,3 +1,7 @@
+# What's new in IAMLAB SAM v0.4.0 charts
+This version adds support for Interim Fix images.  The tag parameter (which was appended to all repositories) is removed
+Specify the tag as part of the repository dbrepository and ldaprepository parameters instead.
+
 # What's new in IAMLAB SAM v0.3.0 charts
 This version uses ISAM 9.0.7.0 images
 

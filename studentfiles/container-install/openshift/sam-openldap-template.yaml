@@ -82,7 +82,7 @@ objects:
             value: ${ADMIN_PW}
           - name: LDAP_CONFIG_PASSWORD
             value: ${CONFIG_PW}
-          image: docker.io/ibmcom/isam-openldap:${ISAM_VERSION}
+          image: docker.io/ibmcom/isam-openldap:${LDAP_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}
           ports:
@@ -143,7 +143,7 @@ parameters:
     name: APP_NAME
     value: openldap
   - description: ISAM Version to be deployed
-    name: ISAM_VERSION
+    name: LDAP_VERSION
     value: 9.0.7.0
   - description: Domain
     name: DOMAIN

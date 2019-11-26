@@ -9,8 +9,7 @@
 global:
   # Common image variables
   image:
-    dbrepository: ibmcom/isam-openldap
-    tag:          9.0.7.0
+    ldaprepository: ibmcom/isam-openldap:9.0.7.0
     pullPolicy:   IfNotPresent
 
   # Container configuration.

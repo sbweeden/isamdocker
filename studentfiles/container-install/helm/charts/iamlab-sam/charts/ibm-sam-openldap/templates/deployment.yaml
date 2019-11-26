@@ -70,7 +70,7 @@ spec:
             - SETUID
             - SETGID
 
-        image: "{{ .Values.global.image.ldaprepository }}:{{ .Values.global.image.tag }}"
+        image: "{{ .Values.global.image.ldaprepository }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.global.image.pullPolicy | quote }}
         env:
         - name: LDAP_DOMAIN

@@ -8,6 +8,7 @@ data:
     .:53 {
         errors
         health
+        ready
         rewrite name isamconfig iamlab-isamconfig.default.svc.cluster.local
         rewrite name isamwrprp1 iamlab-isamwrp-rp1.default.svc.cluster.local
         rewrite name postgresql iamlab-isampostgresql.default.svc.cluster.local
@@ -16,14 +17,13 @@ data:
         rewrite name openldap iamlab-isamopenldap.default.svc.cluster.local
         kubernetes cluster.local in-addr.arpa ip6.arpa {
            pods insecure
-           upstream
            fallthrough in-addr.arpa ip6.arpa
+           ttl 30
         }
         prometheus :9153
-        proxy . /etc/resolv.conf
+        forward . /etc/resolv.conf
         cache 30
         loop
         reload
         loadbalance
     }
-

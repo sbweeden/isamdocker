@@ -748,7 +748,7 @@ parameters:
     value: isam
   - description: ISAM Version to be deployed
     name: ISAM_VERSION
-    value: 9.0.7.0
+    value: 9.0.7.0_IF1
   - description: Config Service Name
     name: CONFIG_SERVICE
     value: isamconfig

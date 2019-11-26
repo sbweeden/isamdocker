@@ -18,8 +18,10 @@ MY_WEB1_IP=127.0.0.3
 # Spare binding if needed
 MY_WEB2_IP=127.0.0.4
 
-# ISAM Version
-ISAM_VERSION=9.0.7.0
+# Versions
+ISAM_VERSION=9.0.7.0_IF1
+LDAP_VERSION=9.0.7.0
+DB_VERSION=9.0.7.0
 
 # Location where Keystores will be created
 DOCKERKEYS=${HOME}/dockerkeys

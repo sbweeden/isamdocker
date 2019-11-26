@@ -88,7 +88,7 @@ services:
 #
 
   openldap:
-    image: ibmcom/isam-openldap:${ISAM_VERSION}
+    image: ibmcom/isam-openldap:${LDAP_VERSION}
     hostname: openldap
     restart: always
     command: --copy-service
@@ -110,7 +110,7 @@ services:
       - ${LMI_IP}:1636:636
 
   postgresql:
-    image: ibmcom/isam-postgresql:${ISAM_VERSION}
+    image: ibmcom/isam-postgresql:${DB_VERSION}
     hostname: postgresql
     restart: always
     environment:
