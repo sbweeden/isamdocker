@@ -19,6 +19,20 @@ objects:
     resources:
       requests:
         storage: 50Mi
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      template.openshift.io/expose-database_name: '{.data[''database-name'']}'
+      template.openshift.io/expose-admin_id: '{.data[''admin-id'']}'
+      template.openshift.io/expose-admin_password: '{.data[''admin-password'']}'
+    name: ${APP_NAME}
+    labels:
+      app: ${APP_NAME}
+  stringData:
+    database-name: ${DB_NAME}
+    admin-id: ${ADMIN_ID}
+    admin-password: ${ADMIN_PW}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -55,11 +69,20 @@ objects:
         containers:
         - env:
           - name: POSTGRES_USER
-            value: ${ADMIN_ID}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}
+                key: admin-id
           - name: POSTGRES_PASSWORD
-            value: ${ADMIN_PW}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}
+                key: admin-password
           - name: POSTGRES_DB
-            value: ${DB_NAME}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}
+                key: database-name
           - name: POSTGRES_SSL_KEYDB
             value: /var/local/server.pem
           image: docker.io/ibmcom/isam-postgresql:${DB_VERSION}
@@ -119,7 +142,8 @@ parameters:
     value: postgres
   - description: Administrator Password
     name: ADMIN_PW
-    value: Passw0rd
+    from: '[a-zA-Z0-9]{16}'
+    generate: expression
   - description: Database Name
     name: DB_NAME
     value: isam

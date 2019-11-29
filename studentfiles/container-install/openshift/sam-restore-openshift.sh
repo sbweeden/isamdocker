@@ -37,7 +37,7 @@ POSTGRESQL="$(oc get --no-headers=true pods -l app=postgresql -o custom-columns=
 oc exec ${POSTGRESQL} -i -- /usr/local/bin/psql isam < ${TMPDIR}/isam.db
 
 # Get docker container ID for isamconfig container
-ISAMCONFIG="$(oc get --no-headers=true pods -l isamapp=isam-config -o custom-columns=:metadata.name)"
+ISAMCONFIG="$(oc get --no-headers=true pods -l name=isam-config -o custom-columns=:metadata.name)"
 
 # Copy snapshots to the isamconfig container
 SNAPSHOTS=`ls ${TMPDIR}/*.snapshot`

@@ -43,6 +43,20 @@ objects:
     resources:
       requests:
         storage: 50Mi
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      template.openshift.io/expose-domain: '{.data[''domain'']}'
+      template.openshift.io/expose-admin_password: '{.data[''admin-password'']}'
+      template.openshift.io/expose-config_password: '{.data[''config-password'']}'
+    name: ${APP_NAME}
+    labels:
+      app: ${APP_NAME}
+  stringData:
+    domain: ${DOMAIN}
+    admin-password: ${ADMIN_PW}
+    config-password: ${CONFIG_PW}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -77,11 +91,20 @@ objects:
           - --copy-service
           env:
           - name: LDAP_DOMAIN
-            value: ${DOMAIN}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}
+                key: domain
           - name: LDAP_ADMIN_PASSWORD
-            value: ${ADMIN_PW}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}
+                key: admin-password
           - name: LDAP_CONFIG_PASSWORD
-            value: ${CONFIG_PW}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}
+                key: config-password
           image: docker.io/ibmcom/isam-openldap:${LDAP_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}
@@ -126,7 +149,6 @@ objects:
       app: ${APP_NAME}
     name: ${APP_NAME}
   spec:
-    externalTrafficPolicy: Cluster
     ports:
     - name: ldaps
       port: 636
@@ -135,7 +157,7 @@ objects:
     selector:
       app: ${APP_NAME}
     sessionAffinity: None
-    type: NodePort
+    type: ClusterIP
   status:
     loadBalancer: {}
 parameters:
@@ -150,10 +172,12 @@ parameters:
     value: ibm.com
   - description: Administrator Password
     name: ADMIN_PW
-    value: Passw0rd
+    from: '[a-zA-Z0-9]{16}'
+    generate: expression
   - description: Config Password
     name: CONFIG_PW
-    value: Passw0rd
+    from: '[a-zA-Z0-9]{16}'
+    generate: expression
   - description: Secret containing keys
     name: KEY_SECRET
     value: openldap-keys

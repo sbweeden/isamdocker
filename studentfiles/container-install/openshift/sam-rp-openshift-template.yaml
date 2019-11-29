@@ -7,33 +7,31 @@ metadata:
     openshift.io/display-name: IBM SAM Reverse Proxy
     iconClass: icon-sso
 objects:
-- apiVersion: apps/v1
-  kind: Deployment
+- apiVersion: v1
+  kind: DeploymentConfig
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
     creationTimestamp: null
     generation: 1
     labels:
-      app: ${APP_NAME}
-    name: ${APP_NAME}
+      app: ${CORE_APP_NAME}-${INSTANCE_NAME}
+      name: ${CORE_APP_NAME}-${INSTANCE_NAME}
+    name: ${CORE_APP_NAME}-${INSTANCE_NAME}
   spec:
     progressDeadlineSeconds: 600
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      matchLabels:
-        app: ${APP_NAME}
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
+      name: ${CORE_APP_NAME}-${INSTANCE_NAME}
+    triggers:
+      - type: ConfigChange
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}
+          name: ${CORE_APP_NAME}-${INSTANCE_NAME}
+          app: ${CORE_APP_NAME}-${INSTANCE_NAME}
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
@@ -49,7 +47,7 @@ objects:
                   - key: app
                     operator: In
                     values:
-                    - ${APP_NAME}
+                    - ${CORE_APP_NAME}-${INSTANCE_NAME}
                 topologyKey: kubernetes.io/hostname
         containers:
         - env:
@@ -60,19 +58,25 @@ objects:
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
           - name: AUTO_RELOAD_FREQUENCY
-            value: "5"
+            value: ${RELOAD_INTERVAL}
           - name: CONFIG_SERVICE_URL
-            value: https://${CONFIG_SERVICE}:9443/shared_volume
+            valueFrom:
+              secretKeyRef:
+                name: ${CORE_APP_NAME}-core
+                key: config-service-url
           - name: CONFIG_SERVICE_USER_NAME
-            value: cfgsvc
+            valueFrom:
+              secretKeyRef:
+                name: ${CORE_APP_NAME}-core
+                key: config-read-username
           - name: CONFIG_SERVICE_USER_PWD
             valueFrom:
               secretKeyRef:
-                key: cfgsvcpw
-                name: ${CFGSVC_SECRET}
+                name: ${CORE_APP_NAME}-core
+                key: config-read-password
           image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
-          name: ${APP_NAME}
+          name: ${CORE_APP_NAME}-${INSTANCE_NAME}
           ports:
           - containerPort: 443
             protocol: TCP
@@ -96,7 +100,7 @@ objects:
             timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
-            name: ${APP_NAME}-logs
+            name: ${CORE_APP_NAME}-${INSTANCE_NAME}-logs
         dnsPolicy: ClusterFirst
         imagePullSecrets:
         - name: ${PULL_SECRET}
@@ -104,72 +108,75 @@ objects:
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
         volumes:
-        - name: ${APP_NAME}-logs
+        - name: ${CORE_APP_NAME}-${INSTANCE_NAME}-logs
           emptyDir: {}
 - apiVersion: v1
   kind: Route
   metadata:
     creationTimestamp: null
-    name: ${APP_NAME}
+    name: ${CORE_APP_NAME}-${INSTANCE_NAME}
     labels:
-      app: ${APP_NAME}
+      app: ${CORE_APP_NAME}-${INSTANCE_NAME}
   spec:
     host: ${DNS_NAME}
     port:
-      targetPort: ${APP_NAME}
+      targetPort: https
     tls:
       insecureEdgeTerminationPolicy: Redirect
       termination: passthrough
     to:
       kind: Service
-      name: ${APP_NAME}
+      name: ${SERVICE_NAME}
       weight: 100
     wildcardPolicy: None
 - apiVersion: v1
   kind: Service
   metadata:
     creationTimestamp: null
-    name: ${APP_NAME}
+    name: ${SERVICE_NAME}
     labels:
-      app: ${APP_NAME}
+      app: ${CORE_APP_NAME}-${INSTANCE_NAME}
   spec:
-    externalTrafficPolicy: Cluster
     ports:
-    - name: ${APP_NAME}
+    - name: https
       port: 443
       protocol: TCP
       targetPort: 443
+    - name: rest
+      port: 9443
+      protocol: TCP
+      targetPort: 9443
     selector:
-      app: ${APP_NAME}
+      app: ${CORE_APP_NAME}-${INSTANCE_NAME}
     sessionAffinity: ClientIP
     sessionAffinityConfig:
       clientIP:
         timeoutSeconds: 10800
-    type: NodePort
+    type: ClusterIP
   status:
     loadBalancer: {}
 parameters:
   - description: ISAM Version to be deployed
     name: ISAM_VERSION
     value: 9.0.7.0_IF1
-  - description: Application Name
-    name: APP_NAME
-    value: isamwrprp1
+  - description: Core Application Name
+    name: CORE_APP_NAME
+    value: isam
   - description: Instance name
     name: INSTANCE_NAME
     value: rp1
+  - description: Service Name
+    name: SERVICE_NAME
+    value: isamwrprp1
   - description: Fully Qualified DNS Name for Route
     name: DNS_NAME
     value: www.iamlab.ibm.com
-  - description: Config Service Name
-    name: CONFIG_SERVICE
-    value: isamconfig
-  - description: Secret for Config Service Password
-    name: CFGSVC_SECRET
-    value: configreader
   - description: Secret for Image Pull
     name: PULL_SECRET
     value: dockerlogin
+  - description: Auto Reload Interval in seconds (0 to disable)
+    name: RELOAD_INTERVAL
+    value: '5'
   - description: Timezone for container
     name: TIMEZONE
     value: Europe/London

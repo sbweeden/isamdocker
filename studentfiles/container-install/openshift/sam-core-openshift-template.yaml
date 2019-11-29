@@ -12,43 +12,65 @@ objects:
   metadata:
     name: ${APP_NAME}-config
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-config
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-config
   spec:
     accessModes:
     - ReadWriteOnce
     resources:
       requests:
         storage: 50Mi
-- apiVersion: apps/v1
-  kind: Deployment
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      template.openshift.io/expose-lmi_admin_password: '{.data[''lmi-admin-password'']}'
+    name: ${APP_NAME}-lmi
+    labels:
+      app: ${APP_NAME}-core
+  stringData:
+    lmi-admin-password: ${ADMIN_PW}
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      template.openshift.io/expose-rest_password: '{.data[''rest-password'']}'
+      template.openshift.io/expose-config_service_url: '{.data[''config-service-url'']}'
+      template.openshift.io/expose-config_read_username: '{.data[''config-read-username'']}'
+      template.openshift.io/expose-config_read_password: '{.data[''config-read-password'']}'
+    name: ${APP_NAME}-core
+    labels:
+      app: ${APP_NAME}-core
+  stringData:
+    rest-password: ${REST_PW}
+    config-service-url: https://${CONFIG_SERVICE}:9443/shared_volume
+    config-read-username: ${CONFIG_ID}
+    config-read-password: ${CONFIG_PW}
+- apiVersion: v1
+  kind: DeploymentConfig
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
     creationTimestamp: null
     generation: 1
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-config
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-config
     name: ${APP_NAME}-config
   spec:
     progressDeadlineSeconds: 600
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      matchLabels:
-        isamapp: ${APP_NAME}-config
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
+      name: ${APP_NAME}-config
+    triggers:
+      - type: ConfigChange
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}
-          isamapp: ${APP_NAME}-config
+          app: ${APP_NAME}-core
+          name: ${APP_NAME}-config
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
@@ -63,8 +85,8 @@ objects:
           - name: ADMIN_PWD
             valueFrom:
               secretKeyRef:
-                key: adminpw
-                name: ${ADMIN_SECRET}
+                key: lmi-admin-password
+                name: ${APP_NAME}-lmi
           image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-config
@@ -98,35 +120,31 @@ objects:
             claimName: ${APP_NAME}-config
         - name: ${APP_NAME}-config-logs
           emptyDir: {}
-- apiVersion: apps/v1
-  kind: Deployment
+- apiVersion: v1
+  kind: DeploymentConfig
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
     creationTimestamp: null
     generation: 1
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-dsc1
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-dsc1
     name: ${APP_NAME}-dsc1
   spec:
     progressDeadlineSeconds: 600
-    replicas: 1
+    replicas: 0
     revisionHistoryLimit: 10
     selector:
-      matchLabels:
-        isamapp: ${APP_NAME}-dsc1
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
+      name: ${APP_NAME}-dsc1
+    triggers:
+      - type: ConfigChange
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}
-          isamapp: ${APP_NAME}-dsc1
+          app: ${APP_NAME}-core
+          name: ${APP_NAME}-dsc1
           isamaffinity: ${APP_NAME}-dsc
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
@@ -152,16 +170,27 @@ objects:
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
           - name: AUTO_RELOAD_FREQUENCY
-            value: "5"
+            value: ${RELOAD_INTERVAL}
           - name: CONFIG_SERVICE_URL
-            value: https://${CONFIG_SERVICE}:9443/shared_volume
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: config-service-url
+          - name: ADMIN_PWD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: rest-password
           - name: CONFIG_SERVICE_USER_NAME
-            value: cfgsvc
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: config-read-username
           - name: CONFIG_SERVICE_USER_PWD
             valueFrom:
               secretKeyRef:
-                key: cfgsvcpw
-                name: ${CFGSVC_SECRET}
+                name: ${APP_NAME}-core
+                key: config-read-password
           image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc1
@@ -200,35 +229,31 @@ objects:
         volumes:
         - name: ${APP_NAME}-dsc1-logs
           emptyDir: {}
-- apiVersion: apps/v1
-  kind: Deployment
+- apiVersion: v1
+  kind: DeploymentConfig
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
     creationTimestamp: null
     generation: 1
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-dsc2
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-dsc2
     name: ${APP_NAME}-dsc2
   spec:
     progressDeadlineSeconds: 600
     replicas: 0
     revisionHistoryLimit: 10
     selector:
-      matchLabels:
-        isamapp: ${APP_NAME}-dsc2
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
+      name: ${APP_NAME}-dsc2
+    triggers:
+      - type: ConfigChange
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}
-          isamapp: ${APP_NAME}-dsc2
+          app: ${APP_NAME}-core
+          name: ${APP_NAME}-dsc2
           isamaffinity: ${APP_NAME}-dsc
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
@@ -254,16 +279,27 @@ objects:
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
           - name: AUTO_RELOAD_FREQUENCY
-            value: "5"
+            value: ${RELOAD_INTERVAL}
           - name: CONFIG_SERVICE_URL
-            value: https://${CONFIG_SERVICE}:9443/shared_volume
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: config-service-url
+          - name: ADMIN_PWD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: rest-password
           - name: CONFIG_SERVICE_USER_NAME
-            value: cfgsvc
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: config-read-username
           - name: CONFIG_SERVICE_USER_PWD
             valueFrom:
               secretKeyRef:
-                key: cfgsvcpw
-                name: ${CFGSVC_SECRET}
+                name: ${APP_NAME}-core
+                key: config-read-password
           image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc2
@@ -302,35 +338,31 @@ objects:
         volumes:
         - name: ${APP_NAME}-dsc2-logs
           emptyDir: {}
-- apiVersion: apps/v1
-  kind: Deployment
+- apiVersion: v1
+  kind: DeploymentConfig
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
     creationTimestamp: null
     generation: 1
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-dsc3
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-dsc3
     name: ${APP_NAME}-dsc3
   spec:
     progressDeadlineSeconds: 600
     replicas: 0
     revisionHistoryLimit: 10
     selector:
-      matchLabels:
-        isamapp: ${APP_NAME}-dsc3
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
+      name: ${APP_NAME}-dsc3
+    triggers:
+      - type: ConfigChange
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}
-          isamapp: ${APP_NAME}-dsc3
+          app: ${APP_NAME}-core
+          name: ${APP_NAME}-dsc3
           isamaffinity: ${APP_NAME}-dsc
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
@@ -356,16 +388,27 @@ objects:
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
           - name: AUTO_RELOAD_FREQUENCY
-            value: "5"
+            value: ${RELOAD_INTERVAL}
           - name: CONFIG_SERVICE_URL
-            value: https://${CONFIG_SERVICE}:9443/shared_volume
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: config-service-url
+          - name: ADMIN_PWD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: rest-password
           - name: CONFIG_SERVICE_USER_NAME
-            value: cfgsvc
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: config-read-username
           - name: CONFIG_SERVICE_USER_PWD
             valueFrom:
               secretKeyRef:
-                key: cfgsvcpw
-                name: ${CFGSVC_SECRET}
+                name: ${APP_NAME}-core
+                key: config-read-password
           image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc3
@@ -404,35 +447,31 @@ objects:
         volumes:
         - name: ${APP_NAME}-dsc3-logs
           emptyDir: {}
-- apiVersion: apps/v1
-  kind: Deployment
+- apiVersion: v1
+  kind: DeploymentConfig
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
     creationTimestamp: null
     generation: 1
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-dsc4
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-dsc4
     name: ${APP_NAME}-dsc4
   spec:
     progressDeadlineSeconds: 600
     replicas: 0
     revisionHistoryLimit: 10
     selector:
-      matchLabels:
-        isamapp: ${APP_NAME}-dsc4
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
+      name: ${APP_NAME}-dsc4
+    triggers:
+      - type: ConfigChange
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}
-          isamapp: ${APP_NAME}-dsc4
+          app: ${APP_NAME}-core
+          name: ${APP_NAME}-dsc4
           isamaffinity: ${APP_NAME}-dsc
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
@@ -458,16 +497,27 @@ objects:
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
           - name: AUTO_RELOAD_FREQUENCY
-            value: "5"
+            value: ${RELOAD_INTERVAL}
           - name: CONFIG_SERVICE_URL
-            value: https://${CONFIG_SERVICE}:9443/shared_volume
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: config-service-url
+          - name: ADMIN_PWD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: rest-password
           - name: CONFIG_SERVICE_USER_NAME
-            value: cfgsvc
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: config-read-username
           - name: CONFIG_SERVICE_USER_PWD
             valueFrom:
               secretKeyRef:
-                key: cfgsvcpw
-                name: ${CFGSVC_SECRET}
+                name: ${APP_NAME}-core
+                key: config-read-password
           image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc4
@@ -506,35 +556,31 @@ objects:
         volumes:
         - name: ${APP_NAME}-dsc4-logs
           emptyDir: {}
-- apiVersion: apps/v1
-  kind: Deployment
+- apiVersion: v1
+  kind: DeploymentConfig
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
     creationTimestamp: null
     generation: 1
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-runtime
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-runtime
     name: ${APP_NAME}-runtime
   spec:
     progressDeadlineSeconds: 600
-    replicas: 1
+    replicas: 0
     revisionHistoryLimit: 10
     selector:
-      matchLabels:
-        isamapp: ${APP_NAME}-runtime
-    strategy:
-      rollingUpdate:
-        maxSurge: 1
-        maxUnavailable: 1
-      type: RollingUpdate
+      name: ${APP_NAME}-runtime
+    triggers:
+      - type: ConfigChange
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app: ${APP_NAME}
-          isamapp: ${APP_NAME}-runtime
+          app: ${APP_NAME}-core
+          name: ${APP_NAME}-runtime
       spec:
         serviceAccountName: ${SERVICE_ACCOUNT}
         securityContext:
@@ -547,7 +593,7 @@ objects:
               podAffinityTerm:
                 labelSelector:
                   matchExpressions:
-                  - key: isamapp
+                  - key: name
                     operator: In
                     values:
                     - ${APP_NAME}-runtime
@@ -559,16 +605,27 @@ objects:
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
           - name: AUTO_RELOAD_FREQUENCY
-            value: "5"
+            value: ${RELOAD_INTERVAL}
           - name: CONFIG_SERVICE_URL
-            value: https://${CONFIG_SERVICE}:9443/shared_volume
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: config-service-url
+          - name: ADMIN_PWD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: rest-password
           - name: CONFIG_SERVICE_USER_NAME
-            value: cfgsvc
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-core
+                key: config-read-username
           - name: CONFIG_SERVICE_USER_PWD
             valueFrom:
               secretKeyRef:
-                key: cfgsvcpw
-                name: ${CFGSVC_SECRET}
+                name: ${APP_NAME}-core
+                key: config-read-password
           image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-runtime
@@ -611,19 +668,18 @@ objects:
     creationTimestamp: null
     name: ${CONFIG_SERVICE}
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-config
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-config
   spec:
-    externalTrafficPolicy: Cluster
     ports:
-    - name: ${CONFIG_SERVICE}
+    - name: rest
       port: 9443
       protocol: TCP
       targetPort: 9443
     selector:
-      isamapp: ${APP_NAME}-config
+      name: ${APP_NAME}-config
     sessionAffinity: None
-    type: NodePort
+    type: ClusterIP
   status:
     loadBalancer: {}
 - apiVersion: v1
@@ -632,20 +688,24 @@ objects:
     creationTimestamp: null
     name: ${DSC_SERVICE}
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-dsc1
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-dsc1
   spec:
     ports:
-    - name: ${DSC_SERVICE}-svc
+    - name: service
       port: 443
       protocol: TCP
       targetPort: 443
-    - name: ${DSC_SERVICE}-rep
+    - name: replication
       port: 444
       protocol: TCP
       targetPort: 444
+    - name: rest
+      port: 9443
+      protocol: TCP
+      targetPort: 9443
     selector:
-      isamapp: ${APP_NAME}-dsc1
+      name: ${APP_NAME}-dsc1
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -656,20 +716,24 @@ objects:
     creationTimestamp: null
     name: ${DSC_SERVICE}2
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-dsc2
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-dsc2
   spec:
     ports:
-    - name: ${DSC_SERVICE}2-svc
+    - name: service
       port: 443
       protocol: TCP
       targetPort: 443
-    - name: ${DSC_SERVICE}2-rep
+    - name: replication
       port: 444
       protocol: TCP
       targetPort: 444
+    - name: rest
+      port: 9443
+      protocol: TCP
+      targetPort: 9443
     selector:
-      isamapp: ${APP_NAME}-dsc2
+      name: ${APP_NAME}-dsc2
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -680,20 +744,24 @@ objects:
     creationTimestamp: null
     name: ${DSC_SERVICE}3
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-dsc3
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-dsc3
   spec:
     ports:
-    - name: ${DSC_SERVICE}3-svc
+    - name: service
       port: 443
       protocol: TCP
       targetPort: 443
-    - name: ${DSC_SERVICE}3-rep
+    - name: replication
       port: 444
       protocol: TCP
       targetPort: 444
+    - name: rest
+      port: 9443
+      protocol: TCP
+      targetPort: 9443
     selector:
-      isamapp: ${APP_NAME}-dsc3
+      name: ${APP_NAME}-dsc3
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -704,20 +772,24 @@ objects:
     creationTimestamp: null
     name: ${DSC_SERVICE}4
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-dsc4
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-dsc4
   spec:
     ports:
-    - name: ${DSC_SERVICE}4-svc
+    - name: service
       port: 443
       protocol: TCP
       targetPort: 443
-    - name: ${DSC_SERVICE}4-rep
+    - name: replication
       port: 444
       protocol: TCP
       targetPort: 444
+    - name: rest
+      port: 9443
+      protocol: TCP
+      targetPort: 9443
     selector:
-      isamapp: ${APP_NAME}-dsc4
+      name: ${APP_NAME}-dsc4
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -728,16 +800,21 @@ objects:
     creationTimestamp: null
     name: ${RUNTIME_SERVICE}
     labels:
-      app: ${APP_NAME}
-      isamapp: ${APP_NAME}-runtime
+      app: ${APP_NAME}-core
+      name: ${APP_NAME}-runtime
   spec:
     ports:
-    - name: ${RUNTIME_SERVICE}
+    - name: https
       port: 443
       protocol: TCP
       targetPort: 443
+    - name: rest
+      port: 9443
+      protocol: TCP
+      targetPort: 9443
     selector:
-      isamapp: ${APP_NAME}-runtime
+    selector:
+      name: ${APP_NAME}-runtime
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -758,15 +835,27 @@ parameters:
   - description: Runtime Service Name
     name: RUNTIME_SERVICE
     value: isamruntime
-  - description: Secret for Administrator UID/PW
-    name: ADMIN_SECRET
-    value: samadmin
-  - description: Secret for Config Service Password
-    name: CFGSVC_SECRET
-    value: configreader
+  - description: Password for LMI Admin User
+    name: ADMIN_PW
+    from: '[a-zA-Z0-9]{16}'
+    generate: expression
+  - description: Username for Config Read
+    name: CONFIG_ID
+    value: cfgsvc
+  - description: Password for Config Read (non-LMI Nodes)
+    name: CONFIG_PW
+    from: '[a-zA-Z0-9]{16}'
+    generate: expression
+  - description: Password for REST Access (non-LMI Nodes)
+    name: REST_PW
+    from: '[a-zA-Z0-9]{16}'
+    generate: expression
   - description: Secret for Image Pull
     name: PULL_SECRET
     value: dockerlogin
+  - description: Auto Reload Interval in seconds (0 to disable)
+    name: RELOAD_INTERVAL
+    value: '5'
   - description: Timezone for container
     name: TIMEZONE
     value: Europe/London
