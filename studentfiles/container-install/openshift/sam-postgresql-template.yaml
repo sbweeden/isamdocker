@@ -1,11 +1,27 @@
 apiVersion: v1
 kind: Template
+labels:
+  template: ibm-sam-postgresql
 metadata:
   creationTimestamp: null
   name: ibm-sam-postgresql
   annotations:
     openshift.io/display-name: IBM SAM PostgreSQL
     iconClass: icon-sso
+    description: A PostgreSQL container provided for testing.
+    openshift.io/long-description: A PostgreSQL container which has the IBM Security Access Manager schema
+      pre-loaded and is enabled for secure communication.  This container is provided as-is
+      for testing and demonstration purposes only.
+    openshift.io/documentation-url: https://ibm.biz/isamdocker
+    openshift.io/provider-display-name: Jon Harry
+    openshift.io/support-url: https://ibm.biz/iamcommunity
+    tags: ibm, isam
+message: |-
+  The following service has been created in your project: ${APP_NAME}.
+
+  Database name: ${DB_NAME}
+  Admin ID: ${ADMIN_ID}
+  Admin Password: ${ADMIN_PW}
 objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
@@ -131,25 +147,32 @@ objects:
   status:
     loadBalancer: {}
 parameters:
-  - description: Application Name
+  - displayName: Application Name
+    description: The name of the application.  Also used as the hostname for connections within the cluster.
     name: APP_NAME
     value: postgresql
-  - description: ISAM Version to be deployed
+  - displayName: Image Version
+    description: The tag that will be used to pull the ibmcom/isam-postgresql image.
     name: DB_VERSION
     value: 9.0.7.0
-  - description: Administrator Username
+  - displayName: Administrator Username
+    description: The username for the database administrator.
     name: ADMIN_ID
     value: postgres
-  - description: Administrator Password
+  - displayName: Administrator Password
+    description: The password for the database administrator.
     name: ADMIN_PW
     from: '[a-zA-Z0-9]{16}'
     generate: expression
-  - description: Database Name
+  - displayName: Database Name
+    description: The name of the database to be created for Access Manager data.
     name: DB_NAME
     value: isam
-  - description: Secret containing keys
+  - displayName: Keys Secret
+    description: The (existing) Secret for crypto data.  File required is server.pem.
     name: KEY_SECRET
     value: postgresql-keys
-  - description: Service Account
+  - displayName: Service Account
+    description: This is the (existing) Service Account for running the pods.  It must allow runAsNonRoot.
     name: SERVICE_ACCOUNT
     value: isam

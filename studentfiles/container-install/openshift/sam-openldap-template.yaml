@@ -1,11 +1,28 @@
 apiVersion: v1
 kind: Template
+labels:
+  template: ibm-sam-openldap
 metadata:
   creationTimestamp: null
   name: ibm-sam-openldap
   annotations:
     openshift.io/display-name: IBM SAM OpenLDAP
     iconClass: icon-sso
+    description: An OpenLDAP container provided for testing.
+    openshift.io/long-description: An OpenLDAP container which has the IBM Security Access Manager schema
+      pre-loaded and is enabled for secure communication.  This container is provided as-is
+      for testing and demonstration purposes only.
+    openshift.io/documentation-url: https://ibm.biz/isamdocker
+    openshift.io/provider-display-name: Jon Harry
+    openshift.io/support-url: https://ibm.biz/iamcommunity
+    tags: ibm, isam
+message: |-
+  The following service has been created in your project: ${APP_NAME}.
+
+  Admin Bind DN: cn=root,secAuthority=default
+  Admin Bind PW: ${ADMIN_PW}
+
+  Configuration PW: ${CONFIG_PW}
 objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
@@ -161,26 +178,33 @@ objects:
   status:
     loadBalancer: {}
 parameters:
-  - description: Application Name
+  - displayName: Application Name
+    description: The name of the application.  Also used as the hostname for connections within the cluster.
     name: APP_NAME
     value: openldap
-  - description: ISAM Version to be deployed
+  - displayName: Image Version
+    description: The tag that will be used to pull the ibmcom/isam-openldap image.
     name: LDAP_VERSION
     value: 9.0.7.0
-  - description: Domain
+  - displayName: Domain
+    description: This is used to create the suffix for users.  A value of ibm.com would create suffix dc=ibm,dc=com.
     name: DOMAIN
     value: ibm.com
-  - description: Administrator Password
+  - displayName: Administrator Password
+    description: This is the password for the cn=root,secAuthority=Default user.
     name: ADMIN_PW
     from: '[a-zA-Z0-9]{16}'
     generate: expression
-  - description: Config Password
+  - displayName: Configuration Password
+    description: This is the configuration password for the OpenLDAP.
     name: CONFIG_PW
     from: '[a-zA-Z0-9]{16}'
     generate: expression
-  - description: Secret containing keys
+  - displayName: Keys Secret
+    description: The (existing) Secret for crypto data.  Files required are ca.crt, ldap.crt, ldap.key, dhparam.pem.
     name: KEY_SECRET
     value: openldap-keys
-  - description: Service Account
+  - displayName: Service Account
+    description: This is the (existing) Service Account for running the pods.  It must allow RUNASANY user.
     name: SERVICE_ACCOUNT
     value: openldap
