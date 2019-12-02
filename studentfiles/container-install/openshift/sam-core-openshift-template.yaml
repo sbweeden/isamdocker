@@ -76,8 +76,8 @@ objects:
     config-service-url: https://${CONFIG_SERVICE}:9443/shared_volume
     config-read-username: ${CONFIG_ID}
     config-read-password: ${CONFIG_PW}
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
@@ -92,7 +92,8 @@ objects:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      name: ${APP_NAME}-config
+      matchLabels:
+        name: ${APP_NAME}-config
     triggers:
       - type: ConfigChange
     template:
@@ -150,8 +151,8 @@ objects:
             claimName: ${APP_NAME}-config
         - name: ${APP_NAME}-config-logs
           emptyDir: {}
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
@@ -166,7 +167,8 @@ objects:
     replicas: 0
     revisionHistoryLimit: 10
     selector:
-      name: ${APP_NAME}-dsc1
+      matchLabels:
+        name: ${APP_NAME}-dsc1
     triggers:
       - type: ConfigChange
     template:
@@ -259,8 +261,8 @@ objects:
         volumes:
         - name: ${APP_NAME}-dsc1-logs
           emptyDir: {}
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
@@ -275,7 +277,8 @@ objects:
     replicas: 0
     revisionHistoryLimit: 10
     selector:
-      name: ${APP_NAME}-dsc2
+      matchLabels:
+        name: ${APP_NAME}-dsc2
     triggers:
       - type: ConfigChange
     template:
@@ -368,8 +371,8 @@ objects:
         volumes:
         - name: ${APP_NAME}-dsc2-logs
           emptyDir: {}
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
@@ -384,7 +387,8 @@ objects:
     replicas: 0
     revisionHistoryLimit: 10
     selector:
-      name: ${APP_NAME}-dsc3
+      matchLabels:
+        name: ${APP_NAME}-dsc3
     triggers:
       - type: ConfigChange
     template:
@@ -477,8 +481,8 @@ objects:
         volumes:
         - name: ${APP_NAME}-dsc3-logs
           emptyDir: {}
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
@@ -493,7 +497,8 @@ objects:
     replicas: 0
     revisionHistoryLimit: 10
     selector:
-      name: ${APP_NAME}-dsc4
+      matchLabels:
+        name: ${APP_NAME}-dsc4
     triggers:
       - type: ConfigChange
     template:
@@ -586,8 +591,8 @@ objects:
         volumes:
         - name: ${APP_NAME}-dsc4-logs
           emptyDir: {}
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     annotations:
       deployment.kubernetes.io/revision: "1"
@@ -602,7 +607,8 @@ objects:
     replicas: 0
     revisionHistoryLimit: 10
     selector:
-      name: ${APP_NAME}-runtime
+      matchLabels:
+        name: ${APP_NAME}-runtime
     triggers:
       - type: ConfigChange
     template:
