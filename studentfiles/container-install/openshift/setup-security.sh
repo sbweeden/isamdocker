@@ -2,12 +2,12 @@ echo "Creating Service Accounts"
 oc create serviceaccount isam
 oc create serviceaccount openldap
 
-echo "Creating Security Context Constraints"
-oc create -f security-constraints.yaml
+echo "Creating isam Security Context Constraint"
+oc create -f isam-security-constraint.yaml
 
 echo "Adding service accounts to Security Constraints"
-oc adm policy add-scc-to-user isam-scc -z isam
-oc adm policy add-scc-to-user openldap-scc -z openldap
+oc adm policy add-scc-to-user isam -z isam
+oc adm policy add-scc-to-user anyuid -z openldap
 echo "Done."
 
 

@@ -1,11 +1,10 @@
-# 
+
 # The minimum security context constraints which are required to run
 # the ISAM container.  We cannot use the 'restricted' security
 # constraint as we need additional capabilities which would otherwise
 # be denied to the container.  The 'anyuid' security constraint may 
 # be used, but it allows additional capabilities which are not 
 # required by the container.
-#
 
 kind: SecurityContextConstraints
 apiVersion: v1
@@ -13,7 +12,7 @@ apiVersion: v1
 # The name and description for the security context constraint to be
 # created.
 metadata:
-  name: isam-scc
+  name: isam
   annotations:
     kubernetes.io/description: The isam SCC allows the container to run
                  as any non-root user.
@@ -36,7 +35,7 @@ priority: 10
 runAsUser:
   type: MustRunAsNonRoot
 seLinuxContext:
-  type: RunAsAny
+  type: MustRunAs
 fsGroup:
   type: RunAsAny
 supplementalGroups:
@@ -76,49 +75,3 @@ defaultAddCapabilities:
 - SETFCAP
 - SETGID
 - SETUID
-
----
-#
-# Security Context Constraint for OpenLDAP.
-# Allows OpenLDAP to run as root
-#
-
-kind: SecurityContextConstraints
-metadata:
-  annotations:
-    kubernetes.io/description: anyuid provides all features of the restricted SCC
-      but allows users to run with any UID and any GID.
-  creationTimestamp: null
-  name: openldap-scc
-allowHostDirVolumePlugin: false
-allowHostIPC: false
-allowHostNetwork: false
-allowHostPID: false
-allowHostPorts: false
-allowPrivilegedContainer: false
-allowedFlexVolumes: null
-apiVersion: v1
-defaultAddCapabilities: null
-fsGroup:
-  type: RunAsAny
-groups:
-- system:cluster-admins
-priority: 10
-readOnlyRootFilesystem: false
-requiredDropCapabilities:
-- MKNOD
-runAsUser:
-  type: RunAsAny
-seLinuxContext:
-  type: MustRunAs
-supplementalGroups:
-  type: RunAsAny
-users: []
-volumes:
-- configMap
-- downwardAPI
-- emptyDir
-- persistentVolumeClaim
-- projected
-- secret
-
