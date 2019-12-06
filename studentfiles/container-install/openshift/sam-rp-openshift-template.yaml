@@ -82,6 +82,11 @@ objects:
             value: ${INSTANCE_NAME}
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
+          - name: ADMIN_PWD
+            valueFrom:
+              secretKeyRef:
+                name: ${CORE_APP_NAME}-core
+                key: rest-password
           - name: AUTO_RELOAD_FREQUENCY
             value: ${RELOAD_INTERVAL}
           - name: CONFIG_SERVICE_URL
@@ -113,14 +118,13 @@ objects:
               command:
               - /sbin/health_check.sh
               - livenessProbe
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
-            initialDelaySeconds: 60
+            initialDelaySeconds: 20
             periodSeconds: 10
             timeoutSeconds: 2
           volumeMounts:
