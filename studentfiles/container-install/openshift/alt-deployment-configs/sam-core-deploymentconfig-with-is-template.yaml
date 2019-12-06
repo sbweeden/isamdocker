@@ -37,6 +37,41 @@ message: |-
   Config Reader Password: ${CONFIG_PW}
   (This user must be created in the LMI)
 objects:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      build: ${APP_NAME}
+    name: ${APP_NAME}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: '${APP_NAME}:latest'
+    source:
+      binary: {}
+      type: Binary
+    strategy:
+      dockerStrategy: {}
+      type: Docker
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    labels:
+      build: ${APP_NAME}
+    name: ${APP_NAME}
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+      - annotations: null
+        from:
+          kind: DockerImage
+          name: 'docker.io/store/ibmcorp/isam:9.0.7.0_IF1'
+        importPolicy: {}
+        name: base
+        referencePolicy:
+          type: Source
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
@@ -95,6 +130,14 @@ objects:
       name: ${APP_NAME}-config
     triggers:
       - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          from:
+            kind: ImageStreamTag
+            name: ${APP_NAME}:base
+          containerNames:
+            - ${APP_NAME}-config
     template:
       metadata:
         creationTimestamp: null
@@ -117,30 +160,33 @@ objects:
               secretKeyRef:
                 key: lmi-admin-password
                 name: ${APP_NAME}-lmi
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: ${APP_NAME}:base
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-config
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+          livenessProbe:
+            exec:
+              command:
+              - /sbin/health_check.sh
+              - livenessProbe
+            periodSeconds: 10
+            timeoutSeconds: 2
           readinessProbe:
-            tcpSocket:
-              port:  9443
+            httpGet:
+              scheme: HTTPS
+              port: 9443
+              path: /core/login
             initialDelaySeconds: 30
             periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 9443
-            initialDelaySeconds: 120
-            periodSeconds: 20
+            timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/shared
             name: ${APP_NAME}-config
           - mountPath: /var/application.logs
             name: ${APP_NAME}-config-logs
         dnsPolicy: ClusterFirst
-        imagePullSecrets:
-        - name: ${PULL_SECRET}
         restartPolicy: Always
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
@@ -163,12 +209,20 @@ objects:
     name: ${APP_NAME}-dsc1
   spec:
     progressDeadlineSeconds: 600
-    replicas: 0
+    replicas: 1
     revisionHistoryLimit: 10
     selector:
       name: ${APP_NAME}-dsc1
     triggers:
       - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          from:
+            kind: ImageStreamTag
+            name: ${APP_NAME}:latest
+          containerNames:
+            - ${APP_NAME}-dsc1
     template:
       metadata:
         creationTimestamp: null
@@ -183,14 +237,16 @@ objects:
           runAsUser:    6000
         affinity:
           podAntiAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: isamaffinity
-                  operator: In
-                  values:
-                  - ${APP_NAME}-dsc
-              topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: isamaffinity
+                    operator: In
+                    values:
+                    - ${APP_NAME}-dsc
+                topologyKey: kubernetes.io/hostname
         containers:
         - env:
           - name: SERVICE
@@ -199,29 +255,14 @@ objects:
             value: "1"
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
-          - name: AUTO_RELOAD_FREQUENCY
-            value: ${RELOAD_INTERVAL}
-          - name: CONFIG_SERVICE_URL
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-service-url
+          - name: SNAPSHOT
+            value: baked.snapshot
           - name: ADMIN_PWD
             valueFrom:
               secretKeyRef:
                 name: ${APP_NAME}-core
                 key: rest-password
-          - name: CONFIG_SERVICE_USER_NAME
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-read-username
-          - name: CONFIG_SERVICE_USER_PWD
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: ${APP_NAME}:latest
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc1
           ports:
@@ -237,22 +278,19 @@ objects:
               command:
               - /sbin/health_check.sh
               - livenessProbe
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
-            initialDelaySeconds: 60
+            initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-dsc1-logs
         dnsPolicy: ClusterFirst
-        imagePullSecrets:
-        - name: ${PULL_SECRET}
         restartPolicy: Always
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
@@ -278,6 +316,14 @@ objects:
       name: ${APP_NAME}-dsc2
     triggers:
       - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          from:
+            kind: ImageStreamTag
+            name: ${APP_NAME}:latest
+          containerNames:
+            - ${APP_NAME}-dsc2
     template:
       metadata:
         creationTimestamp: null
@@ -292,14 +338,16 @@ objects:
           runAsUser:    6000
         affinity:
           podAntiAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: isamaffinity
-                  operator: In
-                  values:
-                  - ${APP_NAME}-dsc
-              topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: isamaffinity
+                    operator: In
+                    values:
+                    - ${APP_NAME}-dsc
+                topologyKey: kubernetes.io/hostname
         containers:
         - env:
           - name: SERVICE
@@ -308,29 +356,14 @@ objects:
             value: "2"
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
-          - name: AUTO_RELOAD_FREQUENCY
-            value: ${RELOAD_INTERVAL}
-          - name: CONFIG_SERVICE_URL
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-service-url
+          - name: SNAPSHOT
+            value: baked.snapshot
           - name: ADMIN_PWD
             valueFrom:
               secretKeyRef:
                 name: ${APP_NAME}-core
                 key: rest-password
-          - name: CONFIG_SERVICE_USER_NAME
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-read-username
-          - name: CONFIG_SERVICE_USER_PWD
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: ${APP_NAME}:latest
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc2
           ports:
@@ -346,22 +379,19 @@ objects:
               command:
               - /sbin/health_check.sh
               - livenessProbe
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
-            initialDelaySeconds: 60
+            initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-dsc2-logs
         dnsPolicy: ClusterFirst
-        imagePullSecrets:
-        - name: ${PULL_SECRET}
         restartPolicy: Always
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
@@ -387,6 +417,14 @@ objects:
       name: ${APP_NAME}-dsc3
     triggers:
       - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          from:
+            kind: ImageStreamTag
+            name: ${APP_NAME}:latest
+          containerNames:
+            - ${APP_NAME}-dsc3
     template:
       metadata:
         creationTimestamp: null
@@ -401,14 +439,16 @@ objects:
           runAsUser:    6000
         affinity:
           podAntiAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: isamaffinity
-                  operator: In
-                  values:
-                  - ${APP_NAME}-dsc
-              topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: isamaffinity
+                    operator: In
+                    values:
+                    - ${APP_NAME}-dsc
+                topologyKey: kubernetes.io/hostname
         containers:
         - env:
           - name: SERVICE
@@ -417,29 +457,14 @@ objects:
             value: "3"
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
-          - name: AUTO_RELOAD_FREQUENCY
-            value: ${RELOAD_INTERVAL}
-          - name: CONFIG_SERVICE_URL
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-service-url
+          - name: SNAPSHOT
+            value: baked.snapshot
           - name: ADMIN_PWD
             valueFrom:
               secretKeyRef:
                 name: ${APP_NAME}-core
                 key: rest-password
-          - name: CONFIG_SERVICE_USER_NAME
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-read-username
-          - name: CONFIG_SERVICE_USER_PWD
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: ${APP_NAME}:latest
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc3
           ports:
@@ -455,22 +480,19 @@ objects:
               command:
               - /sbin/health_check.sh
               - livenessProbe
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
-            initialDelaySeconds: 60
+            initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-dsc3-logs
         dnsPolicy: ClusterFirst
-        imagePullSecrets:
-        - name: ${PULL_SECRET}
         restartPolicy: Always
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
@@ -496,6 +518,14 @@ objects:
       name: ${APP_NAME}-dsc4
     triggers:
       - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          from:
+            kind: ImageStreamTag
+            name: ${APP_NAME}:latest
+          containerNames:
+            - ${APP_NAME}-dsc4
     template:
       metadata:
         creationTimestamp: null
@@ -510,14 +540,16 @@ objects:
           runAsUser:    6000
         affinity:
           podAntiAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: isamaffinity
-                  operator: In
-                  values:
-                  - ${APP_NAME}-dsc
-              topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: isamaffinity
+                    operator: In
+                    values:
+                    - ${APP_NAME}-dsc
+                topologyKey: kubernetes.io/hostname
         containers:
         - env:
           - name: SERVICE
@@ -526,29 +558,14 @@ objects:
             value: "4"
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
-          - name: AUTO_RELOAD_FREQUENCY
-            value: ${RELOAD_INTERVAL}
-          - name: CONFIG_SERVICE_URL
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-service-url
+          - name: SNAPSHOT
+            value: baked.snapshot
           - name: ADMIN_PWD
             valueFrom:
               secretKeyRef:
                 name: ${APP_NAME}-core
                 key: rest-password
-          - name: CONFIG_SERVICE_USER_NAME
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-read-username
-          - name: CONFIG_SERVICE_USER_PWD
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: ${APP_NAME}:latest
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc4
           ports:
@@ -564,22 +581,19 @@ objects:
               command:
               - /sbin/health_check.sh
               - livenessProbe
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
-            initialDelaySeconds: 60
+            initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-dsc4-logs
         dnsPolicy: ClusterFirst
-        imagePullSecrets:
-        - name: ${PULL_SECRET}
         restartPolicy: Always
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
@@ -599,12 +613,20 @@ objects:
     name: ${APP_NAME}-runtime
   spec:
     progressDeadlineSeconds: 600
-    replicas: 0
+    replicas: 1
     revisionHistoryLimit: 10
     selector:
       name: ${APP_NAME}-runtime
     triggers:
       - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          from:
+            kind: ImageStreamTag
+            name: ${APP_NAME}:latest
+          containerNames:
+            - ${APP_NAME}-runtime
     template:
       metadata:
         creationTimestamp: null
@@ -634,29 +656,14 @@ objects:
             value: runtime
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
-          - name: AUTO_RELOAD_FREQUENCY
-            value: ${RELOAD_INTERVAL}
-          - name: CONFIG_SERVICE_URL
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-service-url
+          - name: SNAPSHOT
+            value: baked.snapshot
           - name: ADMIN_PWD
             valueFrom:
               secretKeyRef:
                 name: ${APP_NAME}-core
                 key: rest-password
-          - name: CONFIG_SERVICE_USER_NAME
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-read-username
-          - name: CONFIG_SERVICE_USER_PWD
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-core
-                key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: ${APP_NAME}:latest
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-runtime
           ports:
@@ -670,22 +677,20 @@ objects:
               command:
               - /sbin/health_check.sh
               - livenessProbe
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 2
           readinessProbe:
-            exec:
-              command:
-              - /sbin/health_check.sh
-            initialDelaySeconds: 120
+            httpGet:
+              scheme: HTTPS
+              port: 443
+              path: /sps/static/ibm-logo.png
+            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${APP_NAME}-runtime-logs
         dnsPolicy: ClusterFirst
-        imagePullSecrets:
-        - name: ${PULL_SECRET}
         restartPolicy: Always
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
@@ -881,26 +886,11 @@ parameters:
     name: REST_PW
     from: '[a-zA-Z0-9]{16}'
     generate: expression
-  - displayName: Config Read Username
-    description: The username which will be used to pull configuration from the config service.
-      If not using cfgsvc or admin, this user must be created using the LMI.
-    name: CONFIG_ID
-    value: cfgsvc
-  - displayName: Config Read password
-    description: The password that will be used to authenticate as the Config Read user.
-    name: CONFIG_PW
-    from: '[a-zA-Z0-9]{16}'
-    generate: expression
   - displayName: Image Pull Secret
     description: This is an (existing) docker login secret for pulling the Access Manager image.
       The user must have registered for the image on docker.com.
     name: PULL_SECRET
     value: dockerlogin
-  - displayName: Auto Reload Interval (0 to disable)
-    description: Interval that non-config nodes should check for updated configuration and automatically restart.
-       This should only be used in test environments.
-    name: RELOAD_INTERVAL
-    value: '5'
   - displayName: Timezone
     description: The timezone for message logging (e.g. Europe/London)
     name: TIMEZONE

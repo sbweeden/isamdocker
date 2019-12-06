@@ -50,6 +50,14 @@ objects:
       name: ${CORE_APP_NAME}-${INSTANCE_NAME}
     triggers:
       - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          from:
+            kind: ImageStreamTag
+            name: ${CORE_APP_NAME}:latest
+          containerNames:
+            - ${CORE_APP_NAME}-${INSTANCE_NAME}
     template:
       metadata:
         creationTimestamp: null
@@ -79,26 +87,16 @@ objects:
             value: webseal
           - name: INSTANCE
             value: ${INSTANCE_NAME}
+          - name: SNAPSHOT
+            value: baked.snapshot
           - name: CONTAINER_TIMEZONE
             value: ${TIMEZONE}
-          - name: AUTO_RELOAD_FREQUENCY
-            value: ${RELOAD_INTERVAL}
-          - name: CONFIG_SERVICE_URL
+          - name: ADMIN_PWD
             valueFrom:
               secretKeyRef:
                 name: ${CORE_APP_NAME}-core
-                key: config-service-url
-          - name: CONFIG_SERVICE_USER_NAME
-            valueFrom:
-              secretKeyRef:
-                name: ${CORE_APP_NAME}-core
-                key: config-read-username
-          - name: CONFIG_SERVICE_USER_PWD
-            valueFrom:
-              secretKeyRef:
-                name: ${CORE_APP_NAME}-core
-                key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+                key: rest-password
+          image: ${CORE_APP_NAME}:latest
           imagePullPolicy: IfNotPresent
           name: ${CORE_APP_NAME}-${INSTANCE_NAME}
           ports:
@@ -112,22 +110,19 @@ objects:
               command:
               - /sbin/health_check.sh
               - livenessProbe
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 2
           readinessProbe:
             exec:
               command:
               - /sbin/health_check.sh
-            initialDelaySeconds: 60
+            initialDelaySeconds: 20
             periodSeconds: 10
             timeoutSeconds: 2
           volumeMounts:
           - mountPath: /var/application.logs
             name: ${CORE_APP_NAME}-${INSTANCE_NAME}-logs
         dnsPolicy: ClusterFirst
-        imagePullSecrets:
-        - name: ${PULL_SECRET}
         restartPolicy: Always
         schedulerName: default-scheduler
         terminationGracePeriodSeconds: 30
@@ -180,10 +175,6 @@ objects:
   status:
     loadBalancer: {}
 parameters:
-  - displayName: ISAM Image Version
-    description: The tag that will be used to pull the store/ibmcorp/isam image.
-    name: ISAM_VERSION
-    value: 9.0.7.0_IF1
   - displayName: Core Application Name
     description: The name of the core application (omit -core).  This must match what was
       configured when creating the core application.
@@ -201,16 +192,6 @@ parameters:
     description: A DNS or hosts entry must associate this hostname with IP of OpenShift router.
     name: DNS_NAME
     value: www.iamlab.ibm.com
-  - displayName: Image Pull Secret
-    description: This is an (existing) docker login secret for pulling the Access Manager image.
-      The user must have registered for the image on docker.com.
-    name: PULL_SECRET
-    value: dockerlogin
-  - displayName: Auto Reload Interval (0 to disable)
-    description: Interval that non-config nodes should check for updated configuration and automatically restart.
-       This should only be used in test environments.
-    name: RELOAD_INTERVAL
-    value: '5'
   - displayName: Timezone
     description: The timezone for message logging (e.g. Europe/London)
     name: TIMEZONE
