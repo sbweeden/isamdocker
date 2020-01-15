@@ -22,12 +22,15 @@ data:
         rewrite {
            name regex postgresql iamlab-isampostgresql.default.svc.cluster.local
            answer name iamlab-isampostgresql.default.svc.cluster.local postgresql
+        }
         rewrite {
            name regex isamruntime iamlab-isamruntime.default.svc.cluster.local
            answer name iamlab-isamruntime.default.svc.cluster.local isamruntime
+        }
         rewrite {
            name regex isamdsc iamlab-isamdsc-primary.default.svc.cluster.local
-           answer iamlab-isamdsc-primary.default.svc.cluster.local isamdsc
+           answer name iamlab-isamdsc-primary.default.svc.cluster.local isamdsc
+        }
         rewrite {
            name regex openldap iamlab-isamopenldap.default.svc.cluster.local
            answer name iamlab-isamopenldap.default.svc.cluster.local openldap
