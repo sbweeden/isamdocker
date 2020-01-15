@@ -1,3 +1,6 @@
+# What's new in IAMLAB SAM v0.5.0 charts
+This version updates ibm-sch to 1.2.15 required to support Helm 3.x.
+
 # What's new in IAMLAB SAM v0.4.0 charts
 This version adds support for Interim Fix images.  The tag parameter (which was appended to all repositories) is removed
 Specify the tag as part of the repository dbrepository and ldaprepository parameters instead.

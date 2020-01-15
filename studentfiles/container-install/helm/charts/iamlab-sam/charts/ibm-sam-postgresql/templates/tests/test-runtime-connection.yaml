@@ -30,7 +30,7 @@ spec:
 
   containers:
   - name: "{{ $fullTestCompName }}"
-    image: "{{ .Values.global.image.dbrepository }}:{{ .Values.global.image.tag }}"
+    image: "{{ .Values.global.image.dbrepository }}"
     env:
       - name: DBCMD
         value: "psql"

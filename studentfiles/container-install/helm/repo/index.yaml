@@ -3,12 +3,12 @@ entries:
   iamlab-sam:
   - apiVersion: v1
     appVersion: 9.0.7.0
-    created: "2019-11-26T10:50:41.677552Z"
+    created: "2020-01-15T10:35:22.247433579Z"
     dependencies:
     - alias: sch
       name: ibm-sch
       repository: '@sch'
-      version: 1.2.3
+      version: 1.2.15
     - alias: isamconfig
       name: ibm-sam-config
       repository: file://charts/ibm-sam-config
@@ -35,7 +35,7 @@ entries:
       version: 1.0.0
     description: IBM Security Access Manager provides a simplified access management
       solution.
-    digest: 1098a89fcbf88f6ddaac0b88991af1c7722e7a805ff6bdeefd94b13cc3915fdf
+    digest: d182e29ea927be6c8330956781a6fbab6cac1791281fcbc88ef5ad233c1372cb
     home: https://store.docker.com/images/ibm-security-access-manager
     icon: https://d1q6f0aelx0por.cloudfront.net/product-logos/32925feb-af2b-4b4c-8276-def2a031ed31-artwork2x.png
     keywords:
@@ -49,6 +49,6 @@ entries:
     sources:
     - https://github.com/jonpharry/isamdocker/tree/master/studentfiles/container-install/helm/charts
     urls:
-    - iamlab-sam-0.4.0.tgz
-    version: 0.4.0
-generated: "2019-11-26T10:50:41.666897Z"
+    - iamlab-sam-0.5.0.tgz
+    version: 0.5.0
+generated: "2020-01-15T10:35:22.237811648Z"

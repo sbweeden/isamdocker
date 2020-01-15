@@ -30,7 +30,7 @@ spec:
 
   containers:
   - name: "{{ $fullTestCompName }}"
-    image: "{{ .Values.global.image.ldaprepository }}:{{ .Values.global.image.tag }}"
+    image: "{{ .Values.global.image.ldaprepository }}"
     env:
       - name: LDAPCMD
         value: "ldapsearch"
