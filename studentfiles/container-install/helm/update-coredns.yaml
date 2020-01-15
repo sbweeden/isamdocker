@@ -3,18 +3,36 @@ kind: ConfigMap
 metadata:
   name: coredns
   namespace: kube-system
+apiVersion: v1
 data:
   Corefile: |
     .:53 {
         errors
-        health
+        health {
+           lameduck 5s
+        }
+        rewrite {
+           name regex isamconfig iamlab-isamconfig.default.svc.cluster.local
+           answer name iamlab-isamconfig.default.svc.cluster.local isamconfig
+        }
+        rewrite {
+           name regex isamwrprp1 iamlab-isamwrp-rp1.default.svc.cluster.local
+           answer name iamlab-isamwrp-rp1.default.svc.cluster.local isamwrprp1
+        }
+        rewrite {
+           name regex postgresql iamlab-isampostgresql.default.svc.cluster.local
+           answer name iamlab-isampostgresql.default.svc.cluster.local postgresql
+        rewrite {
+           name regex isamruntime iamlab-isamruntime.default.svc.cluster.local
+           answer name iamlab-isamruntime.default.svc.cluster.local isamruntime
+        rewrite {
+           name regex isamdsc iamlab-isamdsc-primary.default.svc.cluster.local
+           answer iamlab-isamdsc-primary.default.svc.cluster.local isamdsc
+        rewrite {
+           name regex openldap iamlab-isamopenldap.default.svc.cluster.local
+           answer name iamlab-isamopenldap.default.svc.cluster.local openldap
+        }
         ready
-        rewrite name isamconfig iamlab-isamconfig.default.svc.cluster.local
-        rewrite name isamwrprp1 iamlab-isamwrp-rp1.default.svc.cluster.local
-        rewrite name postgresql iamlab-isampostgresql.default.svc.cluster.local
-        rewrite name isamruntime iamlab-isamruntime.default.svc.cluster.local
-        rewrite name isamdsc iamlab-isamdsc-primary.default.svc.cluster.local
-        rewrite name openldap iamlab-isamopenldap.default.svc.cluster.local
         kubernetes cluster.local in-addr.arpa ip6.arpa {
            pods insecure
            fallthrough in-addr.arpa ip6.arpa
