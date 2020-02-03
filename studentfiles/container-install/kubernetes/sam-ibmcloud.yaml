@@ -161,7 +161,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamconfig
-          image: store/ibmcorp/isam:9.0.7.0_IF1
+          image: store/ibmcorp/isam:9.0.7.1_IF2
           volumeMounts:
             - mountPath: /var/shared
               name: isamconfig
@@ -234,7 +234,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamwrprp1
-          image: store/ibmcorp/isam:9.0.7.0_IF1
+          image: store/ibmcorp/isam:9.0.7.1_IF2
           ports:
             - containerPort: 443
           volumeMounts:
@@ -320,7 +320,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamruntime
-          image: store/ibmcorp/isam:9.0.7.0_IF1
+          image: store/ibmcorp/isam:9.0.7.1_IF2
           ports:
             - containerPort: 443
           volumeMounts:
@@ -400,7 +400,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamdsc
-          image: store/ibmcorp/isam:9.0.7.0_IF1
+          image: store/ibmcorp/isam:9.0.7.1_IF2
           ports:
             - containerPort: 443
             - containerPort: 444

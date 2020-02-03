@@ -1,5 +1,5 @@
 # Version Information
-These scripts are for IBM Security Access Manager 9.0.7.0.
+These scripts are for IBM Security Access Manager 9.0.7.1 Interim Fix 2.
 
 Scripts for other versions are available as Releases.
 
@@ -191,7 +191,7 @@ Note that you will see errors during the restore when it attempts to create LDAP
 The contents of this repository are open-source under the Apache 2.0 licence.
 
 ```
-Copyright 2018 International Business Machines
+Copyright 2018-2020 International Business Machines
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

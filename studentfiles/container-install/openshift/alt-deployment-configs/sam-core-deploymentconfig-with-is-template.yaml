@@ -67,7 +67,7 @@ objects:
       - annotations: null
         from:
           kind: DockerImage
-          name: 'docker.io/store/ibmcorp/isam:9.0.7.0_IF1'
+          name: 'docker.io/store/ibmcorp/isam:9.0.7.1_IF2'
         importPolicy: {}
         name: base
         referencePolicy:
@@ -862,7 +862,7 @@ parameters:
   - displayName: ISAM Image Version
     description: The tag that will be used to pull the store/ibmcorp/isam image.
     name: ISAM_VERSION
-    value: 9.0.7.0_IF1
+    value: 9.0.7.1_IF2
   - displayName: Config Service Name
     description: The name for the config service.  Also used as the hostname for connections within the cluster.
     name: CONFIG_SERVICE

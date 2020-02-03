@@ -1,3 +1,6 @@
+# What's new in IAMLAB SAM v0.6.0 charts
+Update to default to 9.0.7.1_IF2 image
+
 # What's new in IAMLAB SAM v0.5.0 charts
 This version updates ibm-sch to 1.2.15 required to support Helm 3.x.
 
