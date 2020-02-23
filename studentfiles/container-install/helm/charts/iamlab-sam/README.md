@@ -22,23 +22,9 @@ This chart will deploy an IBM Security Access Manager environment.  This environ
 | isampostgresql | This container provides a sample database which can be used by IBM Security Access Manager.  It is not designed to be used in production and should only ever be used in development or proof of concept environments.
 | isamopenldap | This container provides a sample LDAP directory which can be used by IBM Security Access Manager.  It is not designed to be used in production and should only ever be used in development or proof of concept environments.
 
+The chart will make use of the ISAM docker image, which is available on Docker Hub: [https://hub.docker.com/r/ibmcom/isam](https://hub.docker.com/r/ibmcom/isam).  
 
 ## Prerequisites
-
-### Docker Identity
-The chart will make use of the ISAM docker image, which is available on Docker Store: [https://store.docker.com/images/ibm-security-access-manager](https://store.docker.com/images/ibm-security-access-manager).  
-
-In order to be able to access the ISAM docker image in Docker Store:
-
-1. A docker account (user identity and password) must be available.  A docker account can be created by following the instructions found at: [https://docs.docker.com/docker-id/](https://docs.docker.com/docker-id/).  
-2. The docker account must be registered with the ISAM image in Docker Store.  This can be achieved by accessing the Web page for the ISAM docker image ([https://store.docker.com/images/ibm-security-access-manager](https://store.docker.com/images/ibm-security-access-manager)), selecting the 'Proceed to Checkout' link and then accepting the terms and conditions.
-3. A secret must be created which contains the docker account information.  This secret should be supplied as the global.imageCredentials.dockerSecret configuration parameter.  The simplest way to create the secret is to use the kubectl command:
-
-   ```
-   kubectl create secret docker-registry <secret-name> \
-              --docker-username=<username> --docker-password=<password> \
-              --docker-email=<e-mail>
-   ```
 
 ### Administrator Password
 The administrator password will reside within a Kubernetes secret, with a secret key of 'adminPassword'.  If no secret is supplied to the chart via the global.container.imageSecret configuration parameter a new secret will be automatically generated which contains a randomly generated password.
@@ -237,7 +223,7 @@ The following tables list the configurable parameters of the ISAM chart, along w
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `global.image.repository` | The image repository. | `store/ibmcorp/isam:9.0.7.1_IF2` |
+| `global.image.repository` | The image repository. | `ibmcom/isam:9.0.7.1_IF3` |
 | `global.image.dbrepository` | The image repository for the postgresql server. | `ibmcom/isam-postgresql:9.0.7.0` |
 | `global.image.ldaprepository` | The image repository for the openldap server. | `ibmcom/isam-openldap:9.0.7.0` |
 | `global.image.pullPolicy` | The image pull policy. | `IfNotPresent` |

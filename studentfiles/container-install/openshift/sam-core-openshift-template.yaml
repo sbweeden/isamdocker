@@ -118,7 +118,7 @@ objects:
               secretKeyRef:
                 key: lmi-admin-password
                 name: ${APP_NAME}-lmi
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: docker.io/ibmcom/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-config
           resources: {}
@@ -230,7 +230,7 @@ objects:
               secretKeyRef:
                 name: ${APP_NAME}-core
                 key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: docker.io/ibmcom/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc1
           ports:
@@ -341,7 +341,7 @@ objects:
               secretKeyRef:
                 name: ${APP_NAME}-core
                 key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: docker.io/ibmcom/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc2
           ports:
@@ -452,7 +452,7 @@ objects:
               secretKeyRef:
                 name: ${APP_NAME}-core
                 key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: docker.io/ibmcom/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc3
           ports:
@@ -563,7 +563,7 @@ objects:
               secretKeyRef:
                 name: ${APP_NAME}-core
                 key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: docker.io/ibmcom/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-dsc4
           ports:
@@ -671,7 +671,7 @@ objects:
               secretKeyRef:
                 name: ${APP_NAME}-core
                 key: config-read-password
-          image: docker.io/store/ibmcorp/isam:${ISAM_VERSION}
+          image: docker.io/ibmcom/isam:${ISAM_VERSION}
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}-runtime
           ports:
@@ -870,9 +870,9 @@ parameters:
     name: APP_NAME
     value: isam
   - displayName: ISAM Image Version
-    description: The tag that will be used to pull the store/ibmcorp/isam image.
+    description: The tag that will be used to pull the ibmcom/isam image.
     name: ISAM_VERSION
-    value: 9.0.7.1_IF2
+    value: 9.0.7.1_IF3
   - displayName: Config Service Name
     description: The name for the config service.  Also used as the hostname for connections within the cluster.
     name: CONFIG_SERVICE

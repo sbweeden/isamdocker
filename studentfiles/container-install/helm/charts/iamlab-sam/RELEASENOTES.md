@@ -1,5 +1,9 @@
+# What's new in IAMLAB SAM v0.7.0 charts
+Update to use ibmcom/isam repository (image will no longer be in store)
+Update to use 9.0.7.1_IF3 image tag
+
 # What's new in IAMLAB SAM v0.6.0 charts
-Update to default to 9.0.7.1_IF2 image
+Update to default to 9.0.7.1_IF2 image tag
 
 # What's new in IAMLAB SAM v0.5.0 charts
 This version updates ibm-sch to 1.2.15 required to support Helm 3.x.
@@ -33,6 +37,10 @@ For detailed documentation instructions go to [https://www.ibm.com/support/knowl
 
 | Chart | Date | Kubernetes Required | Image(s) Supported | Breaking Changes | Details
 | ----- | ---- | ------------------- | ------------------ | ---------------- | -------
-| 0.3.0 | July 2019  | >= 1.11.x | store/ibmcorp/isam:9.0.7.0; ibmcom/isam-postgresql:9.0.7.0; ibmcom/isam-openldap:9.0.7.0 | ReadWriteOnce Disk | Based on official 1.0.0 chart
+| 0.7.0 | Feb 2020  | >= 1.11.x | ibmcom/isam:9.0.7.1_IF2; ibmcom/isam-postgresql:9.0.7.0; ibmcom/isam-openldap:9.0.7.0 | docker hub | Based on official 1.0.0 chart
+| 0.6.0 | Jan 2020  | >= 1.11.x | store/ibmcorp/isam:9.0.7.1_IF2; ibmcom/isam-postgresql:9.0.7.0; ibmcom/isam-openldap:9.0.7.0 | IF2 | Based on official 1.0.0 chart
+| 0.5.0 | Jan 2020  | >= 1.11.x | store/ibmcorp/isam:9.0.7.0_IF1; ibmcom/isam-postgresql:9.0.7.0; ibmcom/isam-openldap:9.0.7.0 | Support Helm 3.0 | Based on official 1.0.0 chart
+| 0.4.0 | Sept 2019  | >= 1.11.x | store/ibmcorp/isam:9.0.7.0_IF1; ibmcom/isam-postgresql:9.0.7.0; ibmcom/isam-openldap:9.0.7.0 | Support IF tags | Based on official 1.0.0 chart
+| 0.3.0 | July 2019  | >= 1.11.x | store/ibmcorp/isam:9.0.7.0; ibmcom/isam-postgresql:9.0.7.0; ibmcom/isam-openldap:9.0.7.0 | ISAM 9.0.7.0 | Based on official 1.0.0 chart
 | 0.2.0 | April 2019 | >= 1.11.x | store/ibmcorp/isam:9.0.6.0; ibmcom/isam-postgresql:9.0.6.0; ibmcom/isam-openldap:9.0.6.0 | ReadWriteOnce Disk | Based on official 1.0.0 chart
 | 0.1.0 | February 2019 | >= 1.11.x | store/ibmcorp/isam:9.0.6.0; ibmcom/isam-postgresql:9.0.6.0; ibmcom/isam-openldap:9.0.6.0 | None | Based on official 1.0.0 chart

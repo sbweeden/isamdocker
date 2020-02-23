@@ -14,7 +14,7 @@ services:
 #
 
   isamconfig:
-    image: store/ibmcorp/isam:${ISAM_VERSION}
+    image: ibmcom/isam:${ISAM_VERSION}
     hostname: isamconfig
     restart: always
     environment:
@@ -35,7 +35,7 @@ services:
       - SYS_RESOURCE
 
   isamwrprp1:
-    image: store/ibmcorp/isam:${ISAM_VERSION}
+    image: ibmcom/isam:${ISAM_VERSION}
     restart: always
     environment:
       - SERVICE=webseal
@@ -58,7 +58,7 @@ services:
       - SYS_RESOURCE
 
   isamruntime:
-    image: store/ibmcorp/isam:${ISAM_VERSION}
+    image: ibmcom/isam:${ISAM_VERSION}
     hostname: isamruntime
     restart: always
     environment:
@@ -77,7 +77,7 @@ services:
       - SYS_RESOURCE
 
   isamdsc:
-    image: store/ibmcorp/isam:${ISAM_VERSION}
+    image: ibmcom/isam:${ISAM_VERSION}
     restart: always
     hostname: isamdsc
     environment:

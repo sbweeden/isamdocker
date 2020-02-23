@@ -14,7 +14,7 @@ services:
 #
 
   isamconfig:
-    image: store/ibmcorp/isam:${ISAM_VERSION}
+    image: ibmcom/isam:${ISAM_VERSION}
     hostname: isamconfig
     restart: always
     environment:
@@ -32,7 +32,7 @@ services:
       - postgresql
 
   isamwrprp1:
-    image: store/ibmcorp/isam:${ISAM_VERSION}
+    image: ibmcom/isam:${ISAM_VERSION}
     hostname: isamwrprp1
     networks:
       default:
@@ -54,7 +54,7 @@ services:
       - openldap
 
   isamruntime:
-    image: store/ibmcorp/isam:${ISAM_VERSION}
+    image: ibmcom/isam:${ISAM_VERSION}
     hostname: isamruntime
     restart: always
     environment:
@@ -70,7 +70,7 @@ services:
       - postgresql
 
   isamdsc:
-    image: store/ibmcorp/isam:${ISAM_VERSION}
+    image: ibmcom/isam:${ISAM_VERSION}
     hostname: isamdsc
     restart: always
     environment:

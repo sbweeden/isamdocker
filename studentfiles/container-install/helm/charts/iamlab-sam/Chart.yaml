@@ -8,10 +8,10 @@ name: iamlab-sam
 description: IBM Security Access Manager provides a simplified access management solution.
 icon: https://d1q6f0aelx0por.cloudfront.net/product-logos/32925feb-af2b-4b4c-8276-def2a031ed31-artwork2x.png
 
-version: 0.6.0
+version: 0.7.0
 tillerVersion: ">=2.9.1"
 engine: gotpl
-appVersion: 9.0.7.0_IF2
+appVersion: 9.0.7.1_IF3
 
 keywords:
   - isam
@@ -19,11 +19,10 @@ keywords:
   - Security
   - Limited
 
-home: https://store.docker.com/images/ibm-security-access-manager
+home: https://hub.docker.com/r/ibmcom/isam
 
 sources:
   - https://github.com/jonpharry/isamdocker/tree/master/studentfiles/container-install/helm/charts
 
 maintainers:
   - name: IBM Security Access Manager
-

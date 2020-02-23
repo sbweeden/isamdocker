@@ -1,5 +1,5 @@
 # Version Information
-These scripts are for IBM Security Access Manager 9.0.7.1 Interim Fix 2.
+These scripts are for IBM Security Access Manager 9.0.7.1 Interim Fix 3.
 
 Scripts for other versions are available as Releases.
 
@@ -29,9 +29,7 @@ These scripts assume you have the following IP addresses available locally on yo
 
 If you want to use other local IP addresses then you'll need to modify the common/env-config.sh file.
 
-First, use `docker login` to log in to Docker.
-
-Then run `./docker-setup.sh` script to create docker containers.
+Run `./docker-setup.sh` script to create docker containers.
 
 You can now connect to the ISAM LMI at https://127.0.0.2
 
@@ -48,8 +46,6 @@ These scripts assume you have the following IP addresses available locally on yo
 
 If you want to use other local IP addresses then you'll need to modify the common/env-config.sh file and run `./update-env-file.sh`
 
-First, use `docker login` to log in to Docker.
-
 Run `./create-keyshares.sh` to copy keys to $HOME/dockershare/composekeys directory
 
 Change directory to the `iamlab` directory.
@@ -65,11 +61,9 @@ To set up an environment using Kubernetes, use the files in studentfiles/contain
 
 These scripts assume that you have the `kubectl` utility installed and that it is configured to talk to your cluster.
 
-First, run `./create-docker-store-secret.sh` command and provide your Docker credentials.
+First, run `./create-secrets.sh` command to create the secrets required for the environment.
 
-Next, run `./create-secrets.sh` command to create the secrets required for the environment.
-
-Finally, run `kubectl create -f <YAML file>` to define the resources required.
+Then, run `kubectl create -f <YAML file>` to define the resources required.
 
 There are YAML files for the following environments:
 - Minikube (sam-minikube.yaml)
@@ -100,11 +94,9 @@ kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"templat
 helm init --service-account tiller --upgrade
 ```
 
-First, run `./create-docker-store-secret.sh` command and provide your Docker credentials.
+First, run `./create-secrets.sh` command to create the secrets required for the environment.
 
-Next, run `./create-secrets.sh` command to create the secrets required for the environment.
-
-Finally, run `helm-install.sh` to run the helm command to create an Access Manager release.
+Then, run `helm-install.sh` to run the helm command to create an Access Manager release.
 
 The output from this command includes the information you will need to connect to the LMI and Reverse Proxy services.
 
@@ -135,8 +127,6 @@ To set up the required security context constaints, run `./setup-security.sh` co
 Now login as your standard user:
 
 ```oc login -u developer -n <project>```
-
-Next, run `./create-docker-store-secret.sh` command and provide your Docker credentials.
 
 Next, run `./create-secrets.sh` command to create the secrets required for the environment.
 

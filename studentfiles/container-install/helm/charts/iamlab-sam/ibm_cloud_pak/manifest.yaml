@@ -1,15 +1,15 @@
 
 charts:
-  - archive: file:iamlab-sam-0.3.0.tgz
-    repository-keys: 
+  - archive: file:iamlab-sam-0.7.0.tgz
+    repository-keys:
       - global.image.repository
       - global.image.dbrepository
       - global.image.ldaprepository
 
 images:
-- image: store/ibmcorp/isam:9.0.7.0
+- image: ibmcom/isam:9.0.7.1_IF3
   references:
-  - repository: store/ibmcorp/isam:9.0.7.0
+  - repository: ibmcom/isam:9.0.7.1_IF3
 - image: ibmcom/isam-postgresql:9.0.7.0
   references:
   - repository: ibmcom/isam-postgresql:9.0.7.0
@@ -19,4 +19,3 @@ images:
 - image: centos:7
   references:
   - repository: centos:7
-
