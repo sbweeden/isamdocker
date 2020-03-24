@@ -1,4 +1,3 @@
-#Assumes create-docker-store-secret.sh used to create dockerlogin secret
 #Assumes create-secrets.sh used to create key file, sam admin, and cfgsvc secrets
 
 apiVersion: apps/v1
@@ -161,7 +160,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamconfig
-          image: ibmcom/isam:9.0.7.1_IF3
+          image: ibmcom/isam:9.0.7.1_IF4
           volumeMounts:
             - mountPath: /var/shared
               name: isamconfig
@@ -234,7 +233,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamwrprp1
-          image: ibmcom/isam:9.0.7.1_IF3
+          image: ibmcom/isam:9.0.7.1_IF4
           ports:
             - containerPort: 443
           volumeMounts:
@@ -320,7 +319,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamruntime
-          image: ibmcom/isam:9.0.7.1_IF3
+          image: ibmcom/isam:9.0.7.1_IF4
           ports:
             - containerPort: 443
           volumeMounts:
@@ -400,7 +399,7 @@ spec:
           emptyDir: {}
       containers:
         - name: isamdsc
-          image: ibmcom/isam:9.0.7.1_IF3
+          image: ibmcom/isam:9.0.7.1_IF4
           ports:
             - containerPort: 443
             - containerPort: 444

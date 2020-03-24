@@ -7,9 +7,9 @@ charts:
       - global.image.ldaprepository
 
 images:
-- image: ibmcom/isam:9.0.7.1_IF3
+- image: ibmcom/isam:9.0.7.1_IF4
   references:
-  - repository: ibmcom/isam:9.0.7.1_IF3
+  - repository: ibmcom/isam:9.0.7.1_IF4
 - image: ibmcom/isam-postgresql:9.0.7.0
   references:
   - repository: ibmcom/isam-postgresql:9.0.7.0

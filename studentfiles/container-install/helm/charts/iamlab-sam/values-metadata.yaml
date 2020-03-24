@@ -67,7 +67,7 @@ global:
         description: "The name of an existing secret which contains the docker credentials."
         type: "string"
         immutable: false
-        required: true
+        required: false
 
   container:
     label: "Docker container configuration"

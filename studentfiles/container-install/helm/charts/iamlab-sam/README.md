@@ -223,7 +223,7 @@ The following tables list the configurable parameters of the ISAM chart, along w
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `global.image.repository` | The image repository. | `ibmcom/isam:9.0.7.1_IF3` |
+| `global.image.repository` | The image repository. | `ibmcom/isam:9.0.7.1_IF4` |
 | `global.image.dbrepository` | The image repository for the postgresql server. | `ibmcom/isam-postgresql:9.0.7.0` |
 | `global.image.ldaprepository` | The image repository for the openldap server. | `ibmcom/isam-openldap:9.0.7.0` |
 | `global.image.pullPolicy` | The image pull policy. | `IfNotPresent` |

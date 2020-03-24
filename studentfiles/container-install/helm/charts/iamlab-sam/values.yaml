@@ -9,7 +9,7 @@
 global:
   # Common image variables
   image:
-    repository:   ibmcom/isam:9.0.7.1_IF3
+    repository:   ibmcom/isam:9.0.7.1_IF4
     dbrepository: ibmcom/isam-postgresql:9.0.7.0
     ldaprepository: ibmcom/isam-openldap:9.0.7.0
     pullPolicy:   IfNotPresent

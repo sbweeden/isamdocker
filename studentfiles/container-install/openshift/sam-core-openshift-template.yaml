@@ -872,7 +872,7 @@ parameters:
   - displayName: ISAM Image Version
     description: The tag that will be used to pull the ibmcom/isam image.
     name: ISAM_VERSION
-    value: 9.0.7.1_IF3
+    value: 9.0.7.1_IF4
   - displayName: Config Service Name
     description: The name for the config service.  Also used as the hostname for connections within the cluster.
     name: CONFIG_SERVICE

@@ -1,3 +1,6 @@
+# What's new in IAMLAB SAM v0.7.1 charts
+Update to use 9.0.7.1_IF4 image tag (required for snapshot failure issue)
+
 # What's new in IAMLAB SAM v0.7.0 charts
 Update to use ibmcom/isam repository (image will no longer be in store)
 Update to use 9.0.7.1_IF3 image tag

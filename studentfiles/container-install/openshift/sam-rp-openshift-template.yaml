@@ -188,7 +188,7 @@ parameters:
   - displayName: ISAM Image Version
     description: The tag that will be used to pull the ibmcom/isam image.
     name: ISAM_VERSION
-    value: 9.0.7.1_IF3
+    value: 9.0.7.1_IF4
   - displayName: Core Application Name
     description: The name of the core application (omit -core).  This must match what was
       configured when creating the core application.

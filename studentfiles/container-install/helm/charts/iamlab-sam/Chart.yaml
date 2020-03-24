@@ -8,10 +8,10 @@ name: iamlab-sam
 description: IBM Security Access Manager provides a simplified access management solution.
 icon: https://d1q6f0aelx0por.cloudfront.net/product-logos/32925feb-af2b-4b4c-8276-def2a031ed31-artwork2x.png
 
-version: 0.7.0
+version: 0.7.1
 tillerVersion: ">=2.9.1"
 engine: gotpl
-appVersion: 9.0.7.1_IF3
+appVersion: 9.0.7.1_IF4
 
 keywords:
   - isam
