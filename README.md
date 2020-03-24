@@ -1,5 +1,5 @@
 # Version Information
-These scripts are for IBM Security Access Manager 9.0.7.1 Interim Fix 3.
+These scripts are for IBM Security Access Manager 9.0.7.1 Interim Fix 4.
 
 Scripts for other versions are available as Releases.
 
