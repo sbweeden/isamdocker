@@ -1,7 +1,8 @@
 # Version Information
-These scripts are for IBM Security Access Manager 9.0.7.1 Interim Fix 4.
+These assets are for IBM Security Access Manager 9.0.7.1 Interim Fix 4.
+Assets for other versions are available as Releases.
 
-Scripts for other versions are available as Releases.
+Assets for IBM Security Verify are available at https://ibm.biz/verifyaccesscontainers.
 
 # Common Requirements and Setup
 
