@@ -35,14 +35,14 @@ docker volume create libsecauthority
 docker volume create ldapslapd
 docker volume create pgdata
 
-docker run -t -d --restart always -v pgdata:/var/lib/postgresql/data -v ${KEY_DIR}/postgresql:/var/local -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=Passw0rd -e POSTGRES_DB=isam -e POSTGRES_SSL_KEYDB=/var/local/server.pem --hostname postgresql --name postgresql --network isam ibmcom/isam-postgresql:${DB_VERSION}
+docker run -t -d --restart always -v pgdata:/var/lib/postgresql/data -v ${KEY_DIR}/postgresql:/var/local -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=Passw0rd -e POSTGRES_DB=isam -e POSTGRES_SSL_KEYDB=/var/local/server.pem --hostname postgresql --name postgresql --network isam ibmcom/verify-access-postgresql:${DB_VERSION}
 
-docker run -t -d --restart always -v libldap:/var/lib/ldap -v ldapslapd:/etc/ldap/slapd.d -v libsecauthority:/var/lib/ldap.secAuthority -v ${KEY_DIR}/openldap:/container/service/slapd/assets/certs --hostname openldap --name openldap -e LDAP_DOMAIN=ibm.com -e LDAP_ADMIN_PASSWORD=Passw0rd -e LDAP_CONFIG_PASSWORD=Passw0rd -p ${MY_LMI_IP}:1636:636 --network isam ibmcom/isam-openldap:${LDAP_VERSION} --copy-service
+docker run -t -d --restart always -v libldap:/var/lib/ldap -v ldapslapd:/etc/ldap/slapd.d -v libsecauthority:/var/lib/ldap.secAuthority -v ${KEY_DIR}/openldap:/container/service/slapd/assets/certs --hostname openldap --name openldap -e LDAP_DOMAIN=ibm.com -e LDAP_ADMIN_PASSWORD=Passw0rd -e LDAP_CONFIG_PASSWORD=Passw0rd -p ${MY_LMI_IP}:1636:636 --network isam ibmcom/verify-access-openldap:${LDAP_VERSION} --copy-service
 
-docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamconfig --name isamconfig -e CONTAINER_TIMEZONE=Europe/London -e ADMIN_PWD=Passw0rd -p ${MY_LMI_IP}:443:9443 -e SERVICE=config --network isam ibmcom/isam:${ISAM_VERSION}
+docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamconfig --name isamconfig -e CONTAINER_TIMEZONE=Europe/London -e ADMIN_PWD=Passw0rd -p ${MY_LMI_IP}:443:9443 -e SERVICE=config --network isam ibmcom/verify-access:${ISAM_VERSION}
 
-docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamwrprp1 --name isamwrprp1 -e CONTAINER_TIMEZONE=Europe/London -p ${MY_WEB1_IP}:443:443 -e SERVICE=webseal -e INSTANCE=rp1 -e AUTO_RELOAD_FREQUENCY=5 --network isam ibmcom/isam:${ISAM_VERSION}
+docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamwrprp1 --name isamwrprp1 -e CONTAINER_TIMEZONE=Europe/London -p ${MY_WEB1_IP}:443:443 -e SERVICE=webseal -e INSTANCE=rp1 -e AUTO_RELOAD_FREQUENCY=5 --network isam ibmcom/verify-access:${ISAM_VERSION}
 
-docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamruntime --name isamruntime -e CONTAINER_TIMEZONE=Europe/London -e SERVICE=runtime -e AUTO_RELOAD_FREQUENCY=5 --network isam ibmcom/isam:${ISAM_VERSION}
+docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamruntime --name isamruntime -e CONTAINER_TIMEZONE=Europe/London -e SERVICE=runtime -e AUTO_RELOAD_FREQUENCY=5 --network isam ibmcom/verify-access:${ISAM_VERSION}
 
-docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamdsc --name isamdsc -e CONTAINER_TIMEZONE=Europe/London -e SERVICE=dsc -e INSTANCE=1 -e AUTO_RELOAD_FREQUENCY=5 --network isam ibmcom/isam:${ISAM_VERSION}
+docker run -t -d --restart always -v isamconfig:/var/shared --hostname isamdsc --name isamdsc -e CONTAINER_TIMEZONE=Europe/London -e SERVICE=dsc -e INSTANCE=1 -e AUTO_RELOAD_FREQUENCY=5 --network isam ibmcom/verify-access:${ISAM_VERSION}

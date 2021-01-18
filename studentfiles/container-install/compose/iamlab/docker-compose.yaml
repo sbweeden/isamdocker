@@ -14,7 +14,7 @@ services:
 #
 
   isamconfig:
-    image: ibmcom/isam:${ISAM_VERSION}
+    image: ibmcom/verify-access:${ISAM_VERSION}
     hostname: isamconfig
     restart: always
     environment:
@@ -32,7 +32,7 @@ services:
       - postgresql
 
   isamwrprp1:
-    image: ibmcom/isam:${ISAM_VERSION}
+    image: ibmcom/verify-access:${ISAM_VERSION}
     hostname: isamwrprp1
     networks:
       default:
@@ -54,7 +54,7 @@ services:
       - openldap
 
   isamruntime:
-    image: ibmcom/isam:${ISAM_VERSION}
+    image: ibmcom/verify-access:${ISAM_VERSION}
     hostname: isamruntime
     restart: always
     environment:
@@ -70,7 +70,7 @@ services:
       - postgresql
 
   isamdsc:
-    image: ibmcom/isam:${ISAM_VERSION}
+    image: ibmcom/verify-access:${ISAM_VERSION}
     hostname: isamdsc
     restart: always
     environment:
@@ -88,7 +88,7 @@ services:
 #
 
   openldap:
-    image: ibmcom/isam-openldap:${LDAP_VERSION}
+    image: ibmcom/verify-access-openldap:${LDAP_VERSION}
     hostname: openldap
     restart: always
     command: --copy-service
@@ -110,7 +110,7 @@ services:
       - ${LMI_IP}:1636:636
 
   postgresql:
-    image: ibmcom/isam-postgresql:${DB_VERSION}
+    image: ibmcom/verify-access-postgresql:${DB_VERSION}
     hostname: postgresql
     restart: always
     environment:
